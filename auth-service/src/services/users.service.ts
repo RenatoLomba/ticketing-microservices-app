@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 
 import { PrismaService } from '../database/prisma/prisma.service'
+import { HashProvider } from '../providers/hash.provider'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly hashProvider: HashProvider,
+  ) {}
 
   getUserById() {
     return 'Im User'
@@ -13,13 +17,30 @@ export class UsersService {
 
   getUserByEmail(email: string) {
     return this.prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+      },
       where: { email },
     })
   }
 
-  createUser(data: Prisma.UserCreateInput) {
+  async createUser({ email, name, password }: Prisma.UserCreateInput) {
+    const hashedPassword = await this.hashProvider.toHash(password)
+
     return this.prisma.user.create({
-      data,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
     })
   }
 }
