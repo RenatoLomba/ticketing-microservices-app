@@ -1,6 +1,7 @@
-import { Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post } from '@nestjs/common'
 
 import { UsersService } from '../../services/users.service'
+import { SignUpDto } from '../dtos/signup.dto'
 
 @Controller('/api/users')
 export class UsersController {
@@ -17,8 +18,8 @@ export class UsersController {
   }
 
   @Post('signup')
-  signUp() {
-    return 'Sign up'
+  signUp(@Body() signUpDto: SignUpDto) {
+    return { ...signUpDto }
   }
 
   @Post('signout')
