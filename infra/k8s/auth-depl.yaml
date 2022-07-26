@@ -15,6 +15,9 @@ spec:
       containers:
         - name: auth
           image: redeye18/ticketing-auth
+          env:
+            - name: DATABASE_URL
+              value: postgresql://auth:docker@auth-postgres-srv:5432/auth?schema=public
 ---
 apiVersion: v1
 kind: Service

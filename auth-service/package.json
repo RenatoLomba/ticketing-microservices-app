@@ -6,7 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prestart": "npx prisma db push",
+    "prisma:push": "npx prisma db push && npx prisma generate",
+    "prestart:dev": "npm run prisma:push",
+    "prestart": "npm run prisma:push",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
