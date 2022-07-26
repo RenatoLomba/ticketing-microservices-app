@@ -20,6 +20,8 @@ spec:
               value: auth
             - name: POSTGRES_PASSWORD
               value: docker
+            - name: POSTGRES_DB
+              value: auth
 ---
 apiVersion: v1
 kind: Service
