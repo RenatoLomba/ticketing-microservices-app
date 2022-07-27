@@ -32,12 +32,12 @@ export class UsersController {
     }
   }
 
-  @Post('signin')
+  @Post('/signin')
   async signIn(@Body() signInDto: SignInDto) {
     const user = await this.usersService.getUserByEmail(signInDto.email)
 
     if (!user) {
-      throw new BadRequestException(['Invalid email or password'])
+      throw new BadRequestException('Invalid email or password')
     }
 
     const passwordIsValid = await this.hashProvider.compare(
@@ -46,7 +46,7 @@ export class UsersController {
     )
 
     if (!passwordIsValid) {
-      throw new BadRequestException(['Invalid email or password'])
+      throw new BadRequestException('Invalid email or password')
     }
     const { access_token } = await this.generateJwt(user)
 
@@ -56,12 +56,12 @@ export class UsersController {
     }
   }
 
-  @Post('signup')
+  @Post('/signup')
   async signUp(@Body() signUpDto: SignUpDto) {
     const user = await this.usersService.getUserByEmail(signUpDto.email)
 
     if (!!user) {
-      throw new BadRequestException(['User already exists'])
+      throw new BadRequestException('User already exists')
     }
 
     const userCreated = await this.usersService.createUser(signUpDto)
@@ -74,7 +74,7 @@ export class UsersController {
     }
   }
 
-  @Post('signout')
+  @Post('/signout')
   signOut() {
     return 'Sign out'
   }
