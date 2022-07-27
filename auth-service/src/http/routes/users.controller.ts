@@ -1,19 +1,24 @@
+import { isAfter } from 'date-fns'
+
 import {
   BadRequestException,
   Body,
   Controller,
   Get,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
+import { EncryptionProvider } from '../../providers/encryption.provider'
 import { HashProvider } from '../../providers/hash.provider'
 import { RefreshTokenService } from '../../services/refresh-token.service'
 import { UsersService } from '../../services/users.service'
 import { CurrentUser } from '../auth/current-user'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { User } from '../auth/jwt.strategy'
+import { RefreshDto } from '../dtos/refresh.dto'
 import { SignInDto } from '../dtos/signin.dto'
 import { SignUpDto } from '../dtos/signup.dto'
 
@@ -24,6 +29,7 @@ export class UsersController {
     private readonly hashProvider: HashProvider,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly encryptionProvider: EncryptionProvider,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -50,6 +56,7 @@ export class UsersController {
     if (!passwordIsValid) {
       throw new BadRequestException('Invalid email or password')
     }
+
     const { access_token } = await this.generateJwt(user)
 
     await this.refreshTokenService.deleteAllUserTokens(user.id)
@@ -59,7 +66,11 @@ export class UsersController {
     return {
       access_token,
       refresh_token: refreshToken.token,
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
     }
   }
 
@@ -87,6 +98,33 @@ export class UsersController {
   @Post('/signout')
   signOut() {
     return 'Sign out'
+  }
+
+  @Post('/refresh')
+  async refresh(@Body() { refresh_token }: RefreshDto) {
+    const refreshToken = await this.refreshTokenService.getToken(refresh_token)
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Invalid token')
+    }
+
+    const tokenHasExpired = isAfter(new Date(), refreshToken.expiresAt)
+
+    if (tokenHasExpired) {
+      throw new UnauthorizedException('Token expired, sign in to application')
+    }
+
+    const decryptedEmail = this.encryptionProvider.decrypt(refreshToken.token)
+
+    const user = await this.usersService.getUserByEmail(decryptedEmail)
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid user')
+    }
+
+    const { access_token } = await this.generateJwt(user)
+
+    return { access_token }
   }
 
   private async generateJwt(user: User) {

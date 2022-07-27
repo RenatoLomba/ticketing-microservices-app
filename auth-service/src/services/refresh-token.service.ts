@@ -38,4 +38,16 @@ export class RefreshTokenService {
       where: { userId },
     })
   }
+
+  getToken(token: string) {
+    return this.prisma.refreshToken.findUnique({
+      select: {
+        id: true,
+        token: true,
+        userId: true,
+        expiresAt: true,
+      },
+      where: { token },
+    })
+  }
 }
