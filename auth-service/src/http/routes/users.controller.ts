@@ -1,3 +1,5 @@
+import { HashProvider } from 'src/providers/hash.provider'
+
 import {
   BadRequestException,
   Body,
@@ -8,6 +10,7 @@ import {
 
 import { AuthService } from '../../services/auth.service'
 import { UsersService } from '../../services/users.service'
+import { SignInDto } from '../dtos/signin.dto'
 import { SignUpDto } from '../dtos/signup.dto'
 
 @Controller('/api/users')
@@ -15,6 +18,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
+    private readonly hashProvider: HashProvider,
   ) {}
 
   @Get('/current')
@@ -23,8 +27,27 @@ export class UsersController {
   }
 
   @Post('signin')
-  signIn() {
-    return 'Sign in'
+  async signIn(@Body() signInDto: SignInDto) {
+    const user = await this.usersService.getUserByEmail(signInDto.email)
+
+    if (!user) {
+      throw new BadRequestException(['Invalid email or password'])
+    }
+
+    const passwordIsValid = await this.hashProvider.compare(
+      signInDto.password,
+      user.password,
+    )
+
+    if (!passwordIsValid) {
+      throw new BadRequestException(['Invalid email or password'])
+    }
+    const { access_token } = await this.authService.generateJwt(user)
+
+    return {
+      access_token,
+      user,
+    }
   }
 
   @Post('signup')
@@ -32,7 +55,7 @@ export class UsersController {
     const user = await this.usersService.getUserByEmail(signUpDto.email)
 
     if (!!user) {
-      throw new BadRequestException(['Invalid email or password'])
+      throw new BadRequestException(['User already exists'])
     }
 
     const userCreated = await this.usersService.createUser(signUpDto)
