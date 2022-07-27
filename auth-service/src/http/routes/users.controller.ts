@@ -6,12 +6,16 @@ import {
   Post,
 } from '@nestjs/common'
 
+import { AuthService } from '../../services/auth.service'
 import { UsersService } from '../../services/users.service'
 import { SignUpDto } from '../dtos/signup.dto'
 
 @Controller('/api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('/current')
   currentUser() {
@@ -31,7 +35,14 @@ export class UsersController {
       throw new BadRequestException(['Invalid email or password'])
     }
 
-    return this.usersService.createUser(signUpDto)
+    const userCreated = await this.usersService.createUser(signUpDto)
+
+    const { access_token } = await this.authService.generateJwt(userCreated)
+
+    return {
+      access_token,
+      user: userCreated,
+    }
   }
 
   @Post('signout')
