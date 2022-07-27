@@ -28,16 +28,3 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: auth-srv
-spec:
-  selector:
-    app: auth
-  ports:
-    - name: auth
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
