@@ -19,7 +19,10 @@ spec:
             - name: POSTGRES_USER
               value: auth
             - name: POSTGRES_PASSWORD
-              value: docker
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_PSW
             - name: POSTGRES_DB
               value: auth
 ---

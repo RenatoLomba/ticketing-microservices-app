@@ -16,8 +16,18 @@ spec:
         - name: auth
           image: redeye18/ticketing-auth
           env:
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_PSW
             - name: DATABASE_URL
-              value: postgresql://auth:docker@auth-postgres-srv:5432/auth?schema=public
+              value: "postgresql://auth:$(DATABASE_PASS)@auth-postgres-srv:5432/auth?schema=public"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
 ---
 apiVersion: v1
 kind: Service

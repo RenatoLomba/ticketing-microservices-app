@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 
 import { DatabaseModule } from '../database/database.module'
@@ -10,9 +11,17 @@ import { UsersController } from './routes/users.controller'
 @Module({
   imports: [
     DatabaseModule,
-    JwtModule.register({
-      secret: 'k8s-micro-services',
-      signOptions: { expiresIn: '15m' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const jwtSecret = configService.get<string>('JWT_KEY')
+
+        return {
+          secret: jwtSecret,
+          signOptions: { expiresIn: '15m' },
+        }
+      },
     }),
   ],
   controllers: [UsersController],
