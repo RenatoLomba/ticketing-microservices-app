@@ -5,6 +5,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   UnauthorizedException,
   UseGuards,
@@ -41,6 +42,7 @@ export class UsersController {
   }
 
   @Post('/signin')
+  @HttpCode(200)
   async signIn(@Body() signInDto: SignInDto) {
     const user = await this.usersService.getUserByEmail(signInDto.email)
 
@@ -95,12 +97,15 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/signout')
-  signOut() {
-    return 'Sign out'
+  @HttpCode(204)
+  async signOut(@CurrentUser() user: User) {
+    await this.refreshTokenService.deleteAllUserTokens(user.id)
   }
 
   @Post('/refresh')
+  @HttpCode(200)
   async refresh(@Body() { refresh_token }: RefreshDto) {
     const refreshToken = await this.refreshTokenService.getToken(refresh_token)
 
