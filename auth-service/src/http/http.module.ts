@@ -20,7 +20,7 @@ import { UsersController } from './routes/users.controller'
 
         return {
           secret: jwtSecret,
-          signOptions: { expiresIn: '15s' },
+          signOptions: { expiresIn: '15m' },
         }
       },
     }),
