@@ -6,10 +6,14 @@ import {
   Controller,
   Get,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 
 import { AuthService } from '../../services/auth.service'
 import { UsersService } from '../../services/users.service'
+import { CurrentUser } from '../auth/current-user'
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import { User } from '../auth/jwt.strategy'
 import { SignInDto } from '../dtos/signin.dto'
 import { SignUpDto } from '../dtos/signup.dto'
 
@@ -21,9 +25,12 @@ export class UsersController {
     private readonly hashProvider: HashProvider,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('/current')
-  currentUser() {
-    return this.usersService.getUserById()
+  currentUser(@CurrentUser() user: User) {
+    return {
+      ...user,
+    }
   }
 
   @Post('signin')

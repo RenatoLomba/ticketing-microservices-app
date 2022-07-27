@@ -11,8 +11,15 @@ export class UsersService {
     private readonly hashProvider: HashProvider,
   ) {}
 
-  getUserById() {
-    return 'Im User'
+  getUserById(id: string) {
+    return this.prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+      where: { id },
+    })
   }
 
   getUserByEmail(email: string) {
