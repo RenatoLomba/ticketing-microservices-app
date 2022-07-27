@@ -32,4 +32,10 @@ export class RefreshTokenService {
       },
     })
   }
+
+  async deleteAllUserTokens(userId: string) {
+    await this.prisma.refreshToken.deleteMany({
+      where: { userId },
+    })
+  }
 }

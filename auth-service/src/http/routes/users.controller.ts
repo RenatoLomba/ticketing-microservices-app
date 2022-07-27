@@ -52,8 +52,13 @@ export class UsersController {
     }
     const { access_token } = await this.generateJwt(user)
 
+    await this.refreshTokenService.deleteAllUserTokens(user.id)
+
+    const refreshToken = await this.refreshTokenService.createToken(user)
+
     return {
       access_token,
+      refresh_token: refreshToken.token,
       user,
     }
   }
