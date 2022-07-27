@@ -9,6 +9,7 @@ import {
 import { JwtService } from '@nestjs/jwt'
 
 import { HashProvider } from '../../providers/hash.provider'
+import { RefreshTokenService } from '../../services/refresh-token.service'
 import { UsersService } from '../../services/users.service'
 import { CurrentUser } from '../auth/current-user'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
@@ -22,6 +23,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly hashProvider: HashProvider,
     private readonly jwtService: JwtService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -68,8 +70,11 @@ export class UsersController {
 
     const { access_token } = await this.generateJwt(userCreated)
 
+    const refreshToken = await this.refreshTokenService.createToken(userCreated)
+
     return {
       access_token,
+      refresh_token: refreshToken.token,
       user: userCreated,
     }
   }
