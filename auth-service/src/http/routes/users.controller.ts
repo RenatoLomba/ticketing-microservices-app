@@ -1,5 +1,3 @@
-import { HashProvider } from 'src/providers/hash.provider'
-
 import {
   BadRequestException,
   Body,
@@ -8,8 +6,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 
-import { AuthService } from '../../services/auth.service'
+import { HashProvider } from '../../providers/hash.provider'
 import { UsersService } from '../../services/users.service'
 import { CurrentUser } from '../auth/current-user'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
@@ -21,8 +20,8 @@ import { SignUpDto } from '../dtos/signup.dto'
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly authService: AuthService,
     private readonly hashProvider: HashProvider,
+    private readonly jwtService: JwtService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -49,7 +48,7 @@ export class UsersController {
     if (!passwordIsValid) {
       throw new BadRequestException(['Invalid email or password'])
     }
-    const { access_token } = await this.authService.generateJwt(user)
+    const { access_token } = await this.generateJwt(user)
 
     return {
       access_token,
@@ -67,7 +66,7 @@ export class UsersController {
 
     const userCreated = await this.usersService.createUser(signUpDto)
 
-    const { access_token } = await this.authService.generateJwt(userCreated)
+    const { access_token } = await this.generateJwt(userCreated)
 
     return {
       access_token,
@@ -78,5 +77,14 @@ export class UsersController {
   @Post('signout')
   signOut() {
     return 'Sign out'
+  }
+
+  private async generateJwt(user: User) {
+    const payload = { name: user.name, email: user.email }
+    return {
+      access_token: this.jwtService.sign(payload, {
+        subject: user.id,
+      }),
+    }
   }
 }

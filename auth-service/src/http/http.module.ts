@@ -4,7 +4,6 @@ import { JwtModule } from '@nestjs/jwt'
 
 import { DatabaseModule } from '../database/database.module'
 import { HashProvider } from '../providers/hash.provider'
-import { AuthService } from '../services/auth.service'
 import { UsersService } from '../services/users.service'
 import { JwtStrategy } from './auth/jwt.strategy'
 import { UsersController } from './routes/users.controller'
@@ -27,6 +26,6 @@ import { UsersController } from './routes/users.controller'
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, HashProvider, AuthService, JwtStrategy],
+  providers: [UsersService, HashProvider, JwtStrategy],
 })
 export class HttpModule {}
