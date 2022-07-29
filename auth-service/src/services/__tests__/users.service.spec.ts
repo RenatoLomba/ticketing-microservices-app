@@ -9,6 +9,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import { PrismaService } from '../../database/prisma/prisma.service'
 import { HashProvider } from '../../providers/hash.provider'
 import { UsersService } from '../users.service'
+import { userStub } from './utils/user.stub'
 
 const mockPrisma = () => {
   const users: User[] = []
@@ -36,20 +37,11 @@ const mockPrisma = () => {
           }
 
           const newUser: User = { ...data, createdAt: new Date(), id: uuid() }
-          console.log({ newUser })
           users.push(newUser)
           resolve(newUser)
         })
       },
     },
-  }
-}
-
-const userStub = (): Prisma.UserCreateInput => {
-  return {
-    email: faker.internet.email(),
-    name: faker.name.findName(),
-    password: faker.random.alphaNumeric(5),
   }
 }
 

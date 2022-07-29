@@ -1,6 +1,7 @@
 import { addHours } from 'date-fns'
 
-import { Injectable } from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 import { EncryptionProvider } from '../providers/encryption.provider'
@@ -17,20 +18,33 @@ export class RefreshTokenService {
     private readonly encryptionProvider: EncryptionProvider,
   ) {}
 
-  createToken(user: User) {
+  async createToken(user: User) {
     const token = this.encryptionProvider.crypt(user.email)
 
-    return this.prisma.refreshToken.create({
-      select: {
-        id: true,
-        token: true,
-      },
-      data: {
-        token,
-        userId: user.id,
-        expiresAt: addHours(new Date(), 24),
-      },
-    })
+    return this.prisma.refreshToken
+      .create({
+        select: {
+          id: true,
+          token: true,
+        },
+        data: {
+          token,
+          userId: user.id,
+          expiresAt: addHours(new Date(), 24),
+        },
+      })
+      .catch((error) => {
+        if (error instanceof PrismaClientKnownRequestError) {
+          switch (error.code) {
+            case 'P2002':
+              throw new ForbiddenException('Duplicate user token')
+            case 'P2003':
+              throw new ForbiddenException('User not found')
+          }
+        }
+
+        throw error
+      })
   }
 
   async deleteAllUserTokens(userId: string) {
