@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 import { HashProvider } from '../providers/hash.provider'
@@ -37,17 +38,27 @@ export class UsersService {
   async createUser({ email, name, password }: Prisma.UserCreateInput) {
     const hashedPassword = await this.hashProvider.toHash(password)
 
-    return this.prisma.user.create({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    })
+    return this.prisma.user
+      .create({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      })
+      .catch((error) => {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.code === 'P2002') {
+            throw new ForbiddenException('Duplicate user email')
+          }
+        }
+
+        throw error
+      })
   }
 }
