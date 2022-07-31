@@ -1,47 +1,19 @@
-import { v4 as uuid } from 'uuid'
-
 import { faker } from '@faker-js/faker'
 import { ForbiddenException } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { Prisma, User } from '@prisma/client'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { User } from '@prisma/client'
 
 import { PrismaService } from '../../database/prisma/prisma.service'
 import { HashProvider } from '../../providers/hash.provider'
 import { UsersService } from '../users.service'
+import { mockPrismaUser } from './utils/mock-prisma-user'
 import { userStub } from './utils/user.stub'
 
 const mockPrisma = () => {
   const users: User[] = []
 
   return {
-    user: {
-      findUnique: ({ where }: Prisma.UserFindUniqueArgs) =>
-        users.find((user) =>
-          !!where.id ? user.id === where.id : user.email === where.email,
-        ) || null,
-      create: ({ data }: Prisma.UserCreateArgs) => {
-        return new Promise<User>((resolve, rejects) => {
-          const userAlreadyExists = users.find(
-            (user) => user.email === data.email,
-          )
-
-          if (userAlreadyExists) {
-            rejects(
-              new PrismaClientKnownRequestError(
-                'Duplicate keys',
-                'P2002',
-                'v1',
-              ),
-            )
-          }
-
-          const newUser: User = { ...data, createdAt: new Date(), id: uuid() }
-          users.push(newUser)
-          resolve(newUser)
-        })
-      },
-    },
+    user: mockPrismaUser(users),
   }
 }
 

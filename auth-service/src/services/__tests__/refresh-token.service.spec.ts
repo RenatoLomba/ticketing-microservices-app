@@ -1,80 +1,22 @@
-import { v4 as uuid } from 'uuid'
-
 import { faker } from '@faker-js/faker'
 import { ForbiddenException } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { Prisma, RefreshToken, User } from '@prisma/client'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { RefreshToken, User } from '@prisma/client'
 
 import { PrismaService } from '../../database/prisma/prisma.service'
 import { EncryptionProvider } from '../../providers/encryption.provider'
 import { RefreshTokenService } from '../refresh-token.service'
+import { mockPrismaRefreshToken } from './utils/mock-prisma-refresh-token'
+import { mockPrismaUser } from './utils/mock-prisma-user'
 import { userStub } from './utils/user.stub'
 
 const mockPrisma = () => {
   const users: User[] = []
-  let tokens: RefreshToken[] = []
+  const tokens: RefreshToken[] = []
 
   return {
-    user: {
-      create: ({ data }: Prisma.UserCreateArgs) => {
-        return new Promise<User>((resolve) => {
-          const newUser: User = { ...data, createdAt: new Date(), id: uuid() }
-          users.push(newUser)
-          resolve(newUser)
-        })
-      },
-    },
-    refreshToken: {
-      findUnique: async ({ where }: Prisma.RefreshTokenFindUniqueArgs) => {
-        return tokens.find((tk) => tk.token === where.token) || null
-      },
-      findMany: async ({ where }: Prisma.RefreshTokenFindManyArgs) => {
-        return tokens.filter((token) => token.userId === where.userId)
-      },
-      deleteMany: async ({ where }: Prisma.RefreshTokenDeleteManyArgs) => {
-        tokens = tokens.filter((token) => token.userId !== where.userId)
-      },
-      create: ({ data }: Prisma.RefreshTokenCreateArgs) => {
-        return new Promise<RefreshToken>((resolve, rejects) => {
-          const user = users.find((u) => u.id === data.userId)
-
-          if (!user) {
-            rejects(
-              new PrismaClientKnownRequestError(
-                'Failed constraint',
-                'P2003',
-                'v1',
-              ),
-            )
-          }
-
-          const tokenAlreadyExists = tokens.find(
-            (tk) => tk.token === data.token,
-          )
-
-          if (!!tokenAlreadyExists) {
-            rejects(
-              new PrismaClientKnownRequestError(
-                'Duplicate keys',
-                'P2002',
-                'v1',
-              ),
-            )
-          }
-
-          const newToken: RefreshToken = {
-            ...data,
-            userId: user.id,
-            expiresAt: new Date(data.expiresAt),
-            createdAt: new Date(),
-            id: uuid(),
-          }
-          tokens.push(newToken)
-          resolve(newToken)
-        })
-      },
-    },
+    user: mockPrismaUser(users),
+    refreshToken: mockPrismaRefreshToken(tokens, users),
   }
 }
 
