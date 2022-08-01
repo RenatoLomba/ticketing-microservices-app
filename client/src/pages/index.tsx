@@ -1,7 +1,9 @@
 import type { NextPage } from 'next'
 
+import { Heading } from '@chakra-ui/react'
+
 const Home: NextPage = () => {
-  return <h1>Hello world inside K8S</h1>
+  return <Heading>Hello world on K8s</Heading>
 }
 
 export default Home
