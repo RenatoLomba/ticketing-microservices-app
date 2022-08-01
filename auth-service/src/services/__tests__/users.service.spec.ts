@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { ForbiddenException } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 
 import { PrismaService } from '../../database/prisma/prisma.service'
 import { HashProvider } from '../../providers/hash.provider'
@@ -99,6 +99,21 @@ describe('UsersService', () => {
 
       await expect(usersService.createUser(userDto)).rejects.toThrowError(
         new ForbiddenException('Duplicate user email'),
+      )
+    })
+
+    it('should throw an unknown error when trying to create user', async () => {
+      const userDto = userStub()
+      jest.spyOn(prisma.user, 'create').mockImplementation(() => {
+        return {
+          catch: (callback) => {
+            callback(new Error('Unknown error'))
+          },
+        } as Prisma.Prisma__UserClient<User>
+      })
+
+      await expect(usersService.createUser(userDto)).rejects.toThrowError(
+        new Error('Unknown error'),
       )
     })
   })

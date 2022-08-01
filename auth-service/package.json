@@ -85,6 +85,7 @@
       "!<rootDir>/**/*.dto.(t|j)s",
       "!<rootDir>/**/*.guard.(t|j)s",
       "!<rootDir>/**/*.strategy.(t|j)s",
+      "!<rootDir>/http/auth/current-user.ts",
       "!<rootDir>/main.ts"
     ],
     "coverageDirectory": "../coverage",

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { ForbiddenException } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { RefreshToken, User } from '@prisma/client'
+import { Prisma, RefreshToken, User } from '@prisma/client'
 
 import { PrismaService } from '../../database/prisma/prisma.service'
 import { EncryptionProvider } from '../../providers/encryption.provider'
@@ -78,6 +78,22 @@ describe('RefreshTokenService', () => {
 
       await expect(refreshTokenService.createToken(user)).rejects.toThrowError(
         new ForbiddenException('Duplicate user token'),
+      )
+    })
+
+    it('should throw an unknown error when trying to create token', async () => {
+      const userDto = userStub()
+      const user = await prisma.user.create({ data: userDto })
+      jest.spyOn(prisma.refreshToken, 'create').mockImplementation(() => {
+        return {
+          catch: (callback) => {
+            callback(new Error('Unknown error'))
+          },
+        } as Prisma.Prisma__RefreshTokenClient<RefreshToken>
+      })
+
+      await expect(refreshTokenService.createToken(user)).rejects.toThrowError(
+        new Error('Unknown error'),
       )
     })
   })
