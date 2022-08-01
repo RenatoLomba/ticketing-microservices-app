@@ -10,8 +10,8 @@ async function bootstrap() {
       transform: true,
     }),
   )
-  await app.listen(3000, () => {
-    console.log(`Running on port 3000`)
+  await app.listen(5000, () => {
+    console.log(`Running on port 5000`)
   })
 }
 bootstrap()
