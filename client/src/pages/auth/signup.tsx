@@ -1,17 +1,10 @@
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  Input,
-} from '@chakra-ui/react'
+import { Button, Flex, Heading } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+
+import { FormInput } from '../../components/form-input'
 
 const signUpFormSchemaValidation = z.object({
   name: z.string().min(5),
@@ -54,48 +47,33 @@ export default function SignUpPage() {
       >
         <Heading mb="6">Sign up</Heading>
 
-        <FormControl isInvalid={!!errors.name}>
-          <FormLabel htmlFor="name">Full name</FormLabel>
-          <Input
-            type="text"
-            id="name"
-            placeholder="Your name"
-            {...register('name')}
-          />
-          <FormErrorMessage>
-            {errors.name && errors.name.message}
-          </FormErrorMessage>
-        </FormControl>
+        <FormInput
+          label="Full name"
+          placeholder="Your name"
+          isInvalid={!!errors.name}
+          errorMessage={errors.name?.message}
+          {...register('name')}
+        />
 
-        <FormControl isInvalid={!!errors.name}>
-          <FormLabel htmlFor="email">Email</FormLabel>
-          <Input
-            type="email"
-            id="email"
-            placeholder="Your email"
-            {...register('email')}
-          />
-          <FormErrorMessage>
-            {errors.email && errors.email.message}
-          </FormErrorMessage>
-        </FormControl>
+        <FormInput
+          label="Email"
+          placeholder="Your email"
+          type="email"
+          isInvalid={!!errors.email}
+          errorMessage={errors.email?.message}
+          {...register('email')}
+        />
 
-        <FormControl isInvalid={!!errors.name}>
-          <FormLabel htmlFor="password">Password</FormLabel>
-          <Input
-            type="password"
-            id="password"
-            placeholder="Your password"
-            {...register('password')}
-          />
-          <FormHelperText>
-            Password must contain at least 4 characters and a max of 20
-            characters
-          </FormHelperText>
-          <FormErrorMessage>
-            {errors.password && errors.password.message}
-          </FormErrorMessage>
-        </FormControl>
+        <FormInput
+          label="Password"
+          type="password"
+          placeholder="Your password"
+          isInvalid={!!errors.password}
+          errorMessage={errors.password?.message}
+          {...register('password')}
+          helperText="Password must contain at least 4 characters and a max of 20
+          characters"
+        />
 
         <Button
           mt="4"
