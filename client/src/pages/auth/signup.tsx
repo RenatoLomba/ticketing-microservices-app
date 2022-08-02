@@ -1,10 +1,13 @@
+import { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { Button, Flex, Heading } from '@chakra-ui/react'
+import { Button, Flex, Heading, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 
 import { FormInput } from '../../components/form-input'
+import { api } from '../../lib/api'
 
 const signUpFormSchemaValidation = z.object({
   name: z.string().min(5),
@@ -14,22 +17,70 @@ const signUpFormSchemaValidation = z.object({
 
 type SignUpFormFields = z.infer<typeof signUpFormSchemaValidation>
 
+type SignUpResponseData = {
+  access_token: string
+  refresh_token: string
+  user: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
 export default function SignUpPage() {
+  const toast = useToast({
+    duration: 9000,
+    isClosable: true,
+    position: 'top-right',
+  })
+
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<SignUpFormFields>({
     resolver: zodResolver(signUpFormSchemaValidation),
   })
 
-  async function handleSignUpFormSubmit(data: SignUpFormFields) {
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
+  const { mutateAsync: signUpUser } = useMutation(
+    async (data: SignUpFormFields) => {
+      const { data: responseData } = await api.post<SignUpResponseData>(
+        '/users/signup',
+        data,
+      )
+
+      return responseData
+    },
+    {
+      onSuccess(data) {
         console.log(data)
-        resolve()
-      }, 1000)
-    })
+        reset()
+      },
+      onError(
+        error: AxiosError<{ error: string; message: string | string[] }>,
+      ) {
+        if (typeof error.response?.data.message === 'string') {
+          toast({
+            title: error.response?.data.error,
+            description: error.response?.data.message,
+            status: 'error',
+          })
+        } else {
+          error.response?.data.message.forEach((errorMessage) => {
+            toast({
+              title: error.response?.data.error,
+              description: errorMessage,
+              status: 'error',
+            })
+          })
+        }
+      },
+    },
+  )
+
+  async function handleSignUpFormSubmit(data: SignUpFormFields) {
+    await signUpUser(data)
   }
 
   return (
