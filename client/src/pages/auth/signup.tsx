@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import { useRouter } from 'next/router'
 import { setCookie } from 'nookies'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -29,6 +30,7 @@ type SignUpResponseData = {
 }
 
 export default function SignUpPage() {
+  const router = useRouter()
   const toast = useToast({
     duration: 9000,
     isClosable: true,
@@ -55,7 +57,6 @@ export default function SignUpPage() {
     },
     {
       onSuccess(data) {
-        console.log(data)
         setCookie(null, '@ticketing-dev:access_token:1.0.0', data.access_token)
         setCookie(
           null,
@@ -64,6 +65,8 @@ export default function SignUpPage() {
         )
         api.defaults.headers.common.Authorization = `Bearer ${data.access_token}`
         reset()
+
+        router.push('/')
       },
       onError(
         error: AxiosError<{ error: string; message: string | string[] }>,
