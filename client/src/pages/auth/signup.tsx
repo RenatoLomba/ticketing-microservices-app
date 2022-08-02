@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import { setCookie } from 'nookies'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -55,6 +56,13 @@ export default function SignUpPage() {
     {
       onSuccess(data) {
         console.log(data)
+        setCookie(null, '@ticketing-dev:access_token:1.0.0', data.access_token)
+        setCookie(
+          null,
+          '@ticketing-dev:refresh_token:1.0.0',
+          data.refresh_token,
+        )
+        api.defaults.headers.common.Authorization = `Bearer ${data.access_token}`
         reset()
       },
       onError(
