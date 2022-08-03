@@ -15,15 +15,14 @@ import {
   ResponseErrorData,
 } from '../../utils/handle-error-message'
 
-const signUpFormSchemaValidation = z.object({
-  name: z.string().min(5),
+const signInFormSchemaValidation = z.object({
   email: z.string().email(),
   password: z.string().min(4).max(20),
 })
 
-type SignUpFormFields = z.infer<typeof signUpFormSchemaValidation>
+type SignInFormFields = z.infer<typeof signInFormSchemaValidation>
 
-type SignUpResponseData = {
+type SignInResponseData = {
   access_token: string
   refresh_token: string
   user: {
@@ -33,7 +32,7 @@ type SignUpResponseData = {
   }
 }
 
-export default function SignUpPage() {
+export default function SignInPage() {
   const router = useRouter()
   const toast = useToast({
     duration: 9000,
@@ -46,14 +45,14 @@ export default function SignUpPage() {
     register,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<SignUpFormFields>({
-    resolver: zodResolver(signUpFormSchemaValidation),
+  } = useForm<SignInFormFields>({
+    resolver: zodResolver(signInFormSchemaValidation),
   })
 
-  const { mutateAsync: signUpUser } = useMutation(
-    async (data: SignUpFormFields) => {
-      const { data: responseData } = await getApi().post<SignUpResponseData>(
-        '/api/users/signup',
+  const { mutateAsync: signInUser } = useMutation(
+    async (data: SignInFormFields) => {
+      const { data: responseData } = await getApi().post<SignInResponseData>(
+        '/api/users/signin',
         data,
       )
 
@@ -80,14 +79,14 @@ export default function SignUpPage() {
     },
   )
 
-  async function handleSignUpFormSubmit(data: SignUpFormFields) {
-    await signUpUser(data)
+  async function handleSignInFormSubmit(data: SignInFormFields) {
+    await signInUser(data)
   }
 
   return (
     <Flex minH="100vh" w="100%" justify="center" align="center" px="6">
       <Flex
-        onSubmit={handleSubmit(handleSignUpFormSubmit)}
+        onSubmit={handleSubmit(handleSignInFormSubmit)}
         as="form"
         maxW={720}
         w="100%"
@@ -97,15 +96,7 @@ export default function SignUpPage() {
         flexDir="column"
         gap="6"
       >
-        <Heading mb="6">Sign Up</Heading>
-
-        <FormInput
-          label="Full name"
-          placeholder="Your name"
-          isInvalid={!!errors.name}
-          errorMessage={errors.name?.message}
-          {...register('name')}
-        />
+        <Heading mb="6">Sign In</Heading>
 
         <FormInput
           label="Email"
