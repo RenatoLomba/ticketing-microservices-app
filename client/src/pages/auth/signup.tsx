@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/router'
-import { setCookie } from 'nookies'
+import nookies from 'nookies'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 
 import { FormInput } from '../../components/form-input'
-import { api } from '../../lib/api'
+import { getApi } from '../../lib/api'
 
 const signUpFormSchemaValidation = z.object({
   name: z.string().min(5),
@@ -48,8 +48,8 @@ export default function SignUpPage() {
 
   const { mutateAsync: signUpUser } = useMutation(
     async (data: SignUpFormFields) => {
-      const { data: responseData } = await api.post<SignUpResponseData>(
-        '/users/signup',
+      const { data: responseData } = await getApi().post<SignUpResponseData>(
+        '/api/users/signup',
         data,
       )
 
@@ -57,13 +57,24 @@ export default function SignUpPage() {
     },
     {
       onSuccess(data) {
-        setCookie(null, '@ticketing-dev:access_token:1.0.0', data.access_token)
-        setCookie(
+        nookies.set(
+          null,
+          '@ticketing-dev:access_token:1.0.0',
+          data.access_token,
+          {
+            maxAge: 30 * 24 * 60 * 60,
+            path: '/',
+          },
+        )
+        nookies.set(
           null,
           '@ticketing-dev:refresh_token:1.0.0',
           data.refresh_token,
+          {
+            maxAge: 30 * 24 * 60 * 60,
+            path: '/',
+          },
         )
-        api.defaults.headers.common.Authorization = `Bearer ${data.access_token}`
         reset()
 
         router.push('/')
