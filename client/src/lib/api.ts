@@ -12,8 +12,8 @@ export const getApi = (ctx?: GetServerSidePropsContext) => {
 
   const isServerSide = typeof window === 'undefined'
 
-  if (isServerSide) {
-    headers.Host = 'ticketing.dev'
+  if (isServerSide && ctx) {
+    headers.Host = ctx.req.headers.host || 'ticketing.dev'
   }
 
   return axios.create({
