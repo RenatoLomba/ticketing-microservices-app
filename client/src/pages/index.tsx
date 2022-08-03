@@ -12,9 +12,11 @@ type CurrentUserData = {
 }
 
 const Home: NextPage<{ currentUser?: CurrentUserData }> = ({ currentUser }) => {
-  console.log(currentUser)
+  if (!currentUser) {
+    return <Heading>User is not signed</Heading>
+  }
 
-  return <Heading>Hello world on K8s</Heading>
+  return <Heading>Welcome, {currentUser.name}</Heading>
 }
 
 const getServerSideProps: GetServerSideProps = async (ctx) => {
