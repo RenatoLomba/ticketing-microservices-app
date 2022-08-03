@@ -1,6 +1,5 @@
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/router'
-import nookies from 'nookies'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -10,6 +9,7 @@ import { useMutation } from '@tanstack/react-query'
 
 import { FormInput } from '../../components/form-input'
 import { getApi } from '../../lib/api'
+import { setAccessToken, setRefreshToken } from '../../utils/cookies'
 
 const signUpFormSchemaValidation = z.object({
   name: z.string().min(5),
@@ -57,24 +57,9 @@ export default function SignUpPage() {
     },
     {
       onSuccess(data) {
-        nookies.set(
-          null,
-          '@ticketing-dev:access_token:1.0.0',
-          data.access_token,
-          {
-            maxAge: 30 * 24 * 60 * 60,
-            path: '/',
-          },
-        )
-        nookies.set(
-          null,
-          '@ticketing-dev:refresh_token:1.0.0',
-          data.refresh_token,
-          {
-            maxAge: 30 * 24 * 60 * 60,
-            path: '/',
-          },
-        )
+        setAccessToken(data.access_token)
+        setRefreshToken(data.refresh_token)
+
         reset()
 
         router.push('/')
