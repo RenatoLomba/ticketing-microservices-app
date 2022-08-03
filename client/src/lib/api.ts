@@ -6,14 +6,17 @@ export const getApi = (ctx?: GetServerSidePropsContext) => {
   const cookies = nookies.get(ctx)
   const accessToken = cookies['@ticketing-dev:access_token:1.0.0']
 
-  const headers: AxiosRequestHeaders = {
+  let headers: AxiosRequestHeaders = {
     Authorization: `Bearer ${accessToken}`,
   }
 
   const isServerSide = typeof window === 'undefined'
 
   if (isServerSide && ctx) {
-    headers.Host = ctx.req.headers.host || 'ticketing.dev'
+    headers = {
+      ...(ctx?.req.headers as AxiosRequestHeaders),
+      ...headers,
+    }
   }
 
   return axios.create({
