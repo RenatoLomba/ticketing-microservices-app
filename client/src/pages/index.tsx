@@ -4,6 +4,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import { Heading } from '@chakra-ui/react'
 
 import { getApi } from '../lib/api'
+import { useAuth } from './_app'
 
 type CurrentUserData = {
   id: string
@@ -11,12 +12,14 @@ type CurrentUserData = {
   email: string
 }
 
-const Home: NextPage<{ currentUser?: CurrentUserData }> = ({ currentUser }) => {
-  if (!currentUser) {
+const Home: NextPage = () => {
+  const { user } = useAuth()
+
+  if (!user) {
     return <Heading>User is not signed</Heading>
   }
 
-  return <Heading>Welcome, {currentUser.name}</Heading>
+  return <Heading>Welcome, {user.name}</Heading>
 }
 
 const getServerSideProps: GetServerSideProps = async (ctx) => {

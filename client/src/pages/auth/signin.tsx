@@ -7,9 +7,9 @@ import { Button, Flex, Heading, useToast } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 
+import { useAuth } from '../_app'
 import { FormInput } from '../../components/form-input'
 import { getApi } from '../../lib/api'
-import { setAccessToken, setRefreshToken } from '../../utils/cookies'
 import {
   handleErrorMessage,
   ResponseErrorData,
@@ -33,6 +33,7 @@ type SignInResponseData = {
 }
 
 export default function SignInPage() {
+  const { sign } = useAuth()
   const router = useRouter()
   const toast = useToast({
     duration: 9000,
@@ -60,11 +61,8 @@ export default function SignInPage() {
     },
     {
       onSuccess(data) {
-        setAccessToken(data.access_token)
-        setRefreshToken(data.refresh_token)
-
+        sign(data)
         reset()
-
         router.push('/')
       },
       onError(error: AxiosError<ResponseErrorData>) {
