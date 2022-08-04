@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: redeye18/ticketing-tickets
+          env:
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_PSW
+            - name: DATABASE_URL
+              value: "postgresql://tickets:$(DATABASE_PASS)@tickets-postgres-srv:5432/tickets?schema=public"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY

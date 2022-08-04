@@ -22,6 +22,17 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
+    - image: redeye18/ticketing-tickets
+      context: tickets-service
+      docker:
+        dockerfile: Dockerfile
+        noCache: false
+        pullParent: false
+        squash: false
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
     - image: redeye18/ticketing-client
       context: client
       docker:

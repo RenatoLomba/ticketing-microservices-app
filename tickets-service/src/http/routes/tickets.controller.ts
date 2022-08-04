@@ -8,7 +8,7 @@ export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('/all')
   getTickets(@CurrentUser() user: User) {
     return this.ticketsService.getTickets(user.id)
   }

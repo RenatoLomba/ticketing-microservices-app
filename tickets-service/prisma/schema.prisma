@@ -9,3 +9,8 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Ticket {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+}

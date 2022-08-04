@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-postgres-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets-postgres
+  template:
+    metadata:
+      labels:
+        app: tickets-postgres
+    spec:
+      containers:
+        - name: tickets-postgres
+          image: postgres
+          env:
+            - name: POSTGRES_USER
+              value: tickets
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: POSTGRES_PSW
+            - name: POSTGRES_DB
+              value: tickets
