@@ -16,6 +16,10 @@ export function setAccessToken(
   })
 }
 
+export function removeAccessToken(ctx?: GetServerSidePropsContext) {
+  nookies.destroy(ctx, CookiesNames.ACCESS_TOKEN)
+}
+
 export function setRefreshToken(
   refreshToken: string,
   ctx?: GetServerSidePropsContext,
@@ -24,4 +28,8 @@ export function setRefreshToken(
     maxAge: 60 * 60 * 24,
     path: '/',
   })
+}
+
+export function removeRefreshToken(ctx?: GetServerSidePropsContext) {
+  nookies.destroy(ctx, CookiesNames.REFRESH_TOKEN)
 }

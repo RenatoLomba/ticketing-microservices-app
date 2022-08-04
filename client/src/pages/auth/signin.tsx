@@ -82,7 +82,13 @@ export default function SignInPage() {
   }
 
   return (
-    <Flex minH="100vh" w="100%" justify="center" align="center" px="6">
+    <Flex
+      h="calc(100vh - 60px)"
+      w="100%"
+      justify="center"
+      align="center"
+      px="6"
+    >
       <Flex
         onSubmit={handleSubmit(handleSignInFormSubmit)}
         as="form"

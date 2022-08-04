@@ -63,9 +63,7 @@ export default function SignUpPage() {
     {
       onSuccess(data) {
         sign(data)
-
         reset()
-
         router.push('/')
       },
       onError(error: AxiosError<ResponseErrorData>) {
@@ -85,7 +83,13 @@ export default function SignUpPage() {
   }
 
   return (
-    <Flex minH="100vh" w="100%" justify="center" align="center" px="6">
+    <Flex
+      h="calc(100vh - 60px)"
+      w="100%"
+      justify="center"
+      align="center"
+      px="6"
+    >
       <Flex
         onSubmit={handleSubmit(handleSignUpFormSubmit)}
         as="form"
