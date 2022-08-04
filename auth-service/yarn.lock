@@ -681,6 +681,15 @@
     tslib "2.4.0"
     uuid "8.3.2"
 
+"@nestjs/common@^9.0.8":
+  version "9.0.8"
+  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-9.0.8.tgz#7a1bf829a79a4e4c53e943feda4181813d6f36c2"
+  integrity sha512-x6+qGRnTEZmg0jzqPUW8uPCK6qPjc7JGmeHszZOso1YCCKNiqaCM4NY6ndbl2Of3kWSpq3qE4thCmuZ/4DwBQA==
+  dependencies:
+    iterare "1.2.1"
+    tslib "2.4.0"
+    uuid "8.3.2"
+
 "@nestjs/config@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@nestjs/config/-/config-2.2.0.tgz#9f3da35f7c4a58724c0a0817d6f04b66e6703430"
@@ -695,6 +704,19 @@
   version "9.0.5"
   resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-9.0.5.tgz#b4cb8f8b0c1d234a840f06e265717d4a24f8d224"
   integrity sha512-41BBJlsquasVrGeRWNYb74Fwsc+oB5EmKC/hioQJAhGqIw5Kr5AcdEoEFaMKFzNLAPbU6c/nVW8T8CrvtQbQww==
+  dependencies:
+    "@nuxtjs/opencollective" "0.3.2"
+    fast-safe-stringify "2.1.1"
+    iterare "1.2.1"
+    object-hash "3.0.0"
+    path-to-regexp "3.2.0"
+    tslib "2.4.0"
+    uuid "8.3.2"
+
+"@nestjs/core@^9.0.8":
+  version "9.0.8"
+  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-9.0.8.tgz#97dca6d86d09ffc4533ae1db537e6f16c593c886"
+  integrity sha512-ICnBw0cH6RzAhWLFQ21UOd8M5pajD3fB9lgttZX0rW153/ZlUavHIVnBRhIXT6soYetK8z2XsyzlPaL/Z7/1ig==
   dependencies:
     "@nuxtjs/opencollective" "0.3.2"
     fast-safe-stringify "2.1.1"
@@ -792,6 +814,19 @@
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-4.1.0.tgz#da8002d4b75c92e3fd564ba5b0bd04847ffb3c4c"
   integrity sha512-quqHXD3P83NBLVtRlts4SgKHmqgA8GMiyDTJ7af03Wg0gl6F5t65mBYvIuwmD+52vHm42JtIsp/fAO9YIV0JBA==
+
+"@rntlombatickets/common@1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@rntlombatickets/common/-/common-1.0.6.tgz#c77ad14d58c4875ad676ed9fdaf386112b571179"
+  integrity sha512-jcShhZx7cXztj66lgzMEvQtTHNrn6A5L7EpTTK0Nrt2mz1Fn0zHhNJnsuZX8uFxqEyqeFRRN1qIhwzlDFVrGQw==
+  dependencies:
+    "@nestjs/common" "^9.0.8"
+    "@nestjs/config" "^2.2.0"
+    "@nestjs/core" "^9.0.8"
+    "@nestjs/passport" "^9.0.0"
+    passport-jwt "^4.0.0"
+    reflect-metadata "^0.1.13"
+    rxjs "^7.5.6"
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.20"
@@ -4246,7 +4281,7 @@ rxjs@6.6.7, rxjs@^6.6.0:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^7.2.0, rxjs@^7.5.5:
+rxjs@^7.2.0, rxjs@^7.5.5, rxjs@^7.5.6:
   version "7.5.6"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.5.6.tgz#0446577557862afd6903517ce7cae79ecb9662bc"
   integrity sha512-dnyv2/YsXhnm461G+R/Pe5bWP41Nm6LBXEYWI6eiFP4fiwx6WRI/CD0zbdVAudd9xwLEF2IDcKXLHit0FYjUzw==

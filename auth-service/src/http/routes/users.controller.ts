@@ -6,11 +6,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common'
+import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
 import { AuthService } from '../../services/auth.service'
-import { CurrentUser } from '../auth/current-user'
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'
-import { User } from '../auth/jwt.strategy'
 import { RefreshDto } from '../dtos/refresh.dto'
 import { SignInDto } from '../dtos/signin.dto'
 import { SignUpDto } from '../dtos/signup.dto'
