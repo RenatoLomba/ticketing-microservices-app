@@ -7,7 +7,7 @@ export const refreshTokenStub = (): RefreshToken => {
   return {
     id: uuid(),
     createdAt: new Date(),
-    expiresAt: addHours(new Date(), 24),
+    expiresAt: addHours(new Date(), 12),
     token: 'valid-token',
     userId: 'invalid-user-id',
   }

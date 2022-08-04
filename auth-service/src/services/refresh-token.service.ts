@@ -30,7 +30,7 @@ export class RefreshTokenService {
         data: {
           token,
           userId: user.id,
-          expiresAt: addHours(new Date(), 24),
+          expiresAt: addHours(new Date(), 12),
         },
       })
       .catch((error) => {
