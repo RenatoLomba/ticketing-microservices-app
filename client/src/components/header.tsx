@@ -1,7 +1,7 @@
 import NextLink from 'next/link'
 import { FC } from 'react'
 
-import { Box, Flex, HStack, Link } from '@chakra-ui/react'
+import { Box, Flex, Heading, HStack, Link } from '@chakra-ui/react'
 
 import { useAuth } from '../pages/_app'
 
@@ -19,7 +19,9 @@ export const Header: FC = () => {
         justify="space-between"
       >
         <NextLink href="/" passHref>
-          <Link>GitTix</Link>
+          <Link>
+            <Heading size="lg">GitTix</Heading>
+          </Link>
         </NextLink>
 
         <HStack spacing={6}>
