@@ -138,8 +138,6 @@ const defaultTheme = extendTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient())
 
-  console.log({ pageProps })
-
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={defaultTheme}>
