@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { createContext, FC, ReactNode, useContext, useState } from 'react'
@@ -26,19 +27,6 @@ import {
   ResponseErrorData,
 } from '../utils/handle-error-message'
 
-const defaultTheme = extendTheme({
-  styles: {
-    global: {
-      body: {
-        bg: 'gray.800',
-        color: 'gray.100',
-      },
-    },
-  },
-})
-
-// export const queryClient = new QueryClient()
-
 type User = {
   id: string
   name: string
@@ -57,30 +45,40 @@ type AuthContextData = {
   signOut: () => Promise<void>
 }
 
-const AuthContext = createContext({} as AuthContextData)
-
 type AuthProviderProps = {
   children: ReactNode
   initialUser?: User
 }
 
-const AuthProvider: FC<AuthProviderProps> = ({ children, initialUser }) => {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const toast = useToast({
+const AuthContext = createContext({} as AuthContextData)
+
+const getCurrentUser = async (ctx?: GetServerSidePropsContext) => {
+  const { data } = await getApi(ctx).get<User>('/api/users/current')
+
+  return data
+}
+
+export const useDefaultToast = () =>
+  useToast({
     duration: 9000,
     isClosable: true,
     position: 'top-right',
   })
 
+const AuthProvider: FC<AuthProviderProps> = ({ children, initialUser }) => {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const toast = useDefaultToast()
+
   const { data: user } = useQuery(
     ['current-user'],
-    async () => {
-      const response = await getApi().get<User>('/api/users/current')
-
-      return response.data
+    async () => getCurrentUser(),
+    {
+      refetchOnWindowFocus: false,
+      initialData: initialUser,
+      retry: false,
+      staleTime: 1000 * 60 * 15,
     },
-    { initialData: initialUser, retry: false, staleTime: 1000 * 60 * 15 },
   )
 
   const { mutateAsync: signOut } = useMutation(
@@ -126,8 +124,21 @@ const AuthProvider: FC<AuthProviderProps> = ({ children, initialUser }) => {
 
 export const useAuth = () => useContext(AuthContext)
 
+const defaultTheme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        bg: 'gray.800',
+        color: 'gray.100',
+      },
+    },
+  },
+})
+
 function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient())
+
+  console.log({ pageProps })
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -141,6 +152,35 @@ function MyApp({ Component, pageProps }: AppProps) {
       </ChakraProvider>
     </QueryClientProvider>
   )
+}
+
+export const withAuth = (getServerSideProps: GetServerSideProps) => {
+  return async (ctx: GetServerSidePropsContext) => {
+    try {
+      const currentUser = await getCurrentUser(ctx)
+
+      const getServerSidePropsData = (await getServerSideProps(ctx)) as {
+        props: {
+          [key: string]: unknown
+        }
+      }
+
+      return {
+        ...getServerSidePropsData,
+        props: {
+          ...getServerSidePropsData.props,
+          currentUser,
+        },
+      }
+    } catch (err) {
+      return {
+        redirect: {
+          destination: '/auth/signin',
+          permanent: false,
+        },
+      }
+    }
+  }
 }
 
 export default MyApp

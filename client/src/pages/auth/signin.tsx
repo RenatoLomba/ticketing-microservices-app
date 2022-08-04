@@ -3,11 +3,11 @@ import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { Button, Flex, Heading, useToast } from '@chakra-ui/react'
+import { Button, Flex, Heading } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 
-import { useAuth } from '../_app'
+import { useAuth, useDefaultToast } from '../_app'
 import { FormInput } from '../../components/form-input'
 import { getApi } from '../../lib/api'
 import {
@@ -35,11 +35,7 @@ type SignInResponseData = {
 export default function SignInPage() {
   const { sign } = useAuth()
   const router = useRouter()
-  const toast = useToast({
-    duration: 9000,
-    isClosable: true,
-    position: 'top-right',
-  })
+  const toast = useDefaultToast()
 
   const {
     handleSubmit,
