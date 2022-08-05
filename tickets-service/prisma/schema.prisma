@@ -13,7 +13,7 @@ datasource db {
 model Ticket {
   id        String   @id @default(uuid())
   title     String   @unique
-  price     String
+  price     Float
   userId    String
   createdAt DateTime @default(now())
 }

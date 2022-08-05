@@ -11,7 +11,11 @@ export class TicketsService {
   async createTicket({ price, title, userId }: Prisma.TicketCreateInput) {
     return this.prisma.ticket
       .create({
-        data: { price, title, userId },
+        data: {
+          price,
+          title,
+          userId,
+        },
       })
       .catch((error) => {
         if (error instanceof PrismaClientKnownRequestError) {
