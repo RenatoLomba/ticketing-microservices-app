@@ -1,6 +1,10 @@
 import slugify from 'slugify'
 
-import { ForbiddenException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
@@ -9,6 +13,16 @@ import { PrismaService } from '../database/prisma/prisma.service'
 @Injectable()
 export class TicketsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getTicketBySlug(slug: string) {
+    const ticket = await this.prisma.ticket.findUnique({ where: { slug } })
+
+    if (!ticket) {
+      throw new BadRequestException(`Ticket requested don't exist`)
+    }
+
+    return ticket
+  }
 
   async createTicket({
     price,
