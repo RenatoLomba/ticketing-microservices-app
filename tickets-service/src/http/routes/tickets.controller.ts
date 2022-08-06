@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -16,10 +17,22 @@ import { CreateTicketDto } from '../dtos/create-ticket.dto'
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
+  @Get('/list')
+  @HttpCode(200)
+  async listTickets() {
+    return this.ticketsService.getTickets({})
+  }
+
   @Get('/:slug')
   @HttpCode(200)
   async getTicket(@Param('slug') slug: string) {
-    return this.ticketsService.getTicketBySlug(slug)
+    const ticket = await this.ticketsService.getTicketBySlug(slug)
+
+    if (!ticket) {
+      throw new BadRequestException(`Ticket requested don't exist`)
+    }
+
+    return ticket
   }
 
   @UseGuards(JwtAuthGuard)
