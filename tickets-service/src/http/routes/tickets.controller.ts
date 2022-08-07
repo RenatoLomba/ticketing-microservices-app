@@ -42,7 +42,7 @@ export class TicketsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  createTicket(
+  async createTicket(
     @Body() { price, title }: CreateTicketDto,
     @CurrentUser() user: User,
   ) {
@@ -51,6 +51,12 @@ export class TicketsController {
       trim: true,
       strict: true,
     })
+
+    const ticket = await this.ticketsService.ticket({ slug })
+
+    if (!!ticket) {
+      throw new BadRequestException('Ticket with title/slug already exists')
+    }
 
     return this.ticketsService.createTicket({
       slug,
@@ -88,6 +94,17 @@ export class TicketsController {
         trim: true,
         strict: true,
       })
+
+      const ticketWithSlugAlreadyExistent = await this.ticketsService.ticket({
+        slug: updateData.slug,
+      })
+
+      if (
+        !!ticketWithSlugAlreadyExistent &&
+        ticketWithSlugAlreadyExistent.id !== ticket.id
+      ) {
+        throw new BadRequestException('Ticket with title/slug already exists')
+      }
     }
 
     return this.ticketsService.updateTicket({

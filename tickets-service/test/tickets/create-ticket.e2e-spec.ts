@@ -42,61 +42,143 @@ describe('TicketsController (e2e)', () => {
         .expect(400)
     })
 
-    it('should return status code 400 when title is not provided or empty', async () => {
-      await request(app.getHttpServer())
+    it('should return status code 400 when title is undefined', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/tickets/create')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           price: 19.99,
         })
-        .expect(400)
 
-      await request(app.getHttpServer())
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual([
+        'title should not be empty',
+        'title must be a string',
+      ])
+    })
+
+    it('should return status code 400 when title is empty', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/tickets/create')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: '',
           price: 19.99,
         })
-        .expect(400)
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual(['title should not be empty'])
     })
 
-    it('should return status code 400 when price is not provided or invalid', async () => {
-      await request(app.getHttpServer())
+    it('should return status code 400 when price is undefined', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/tickets/create')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'Valid Ticket Title',
+        })
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual([
+        'price must be a positive number',
+        'price must be a number conforming to the specified constraints',
+      ])
+    })
+
+    it('should return status code 400 when price is not a number', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/tickets/create')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'Valid Ticket Title',
+          price: '24.56',
+        })
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual([
+        'price must be a positive number',
+        'price must be a number conforming to the specified constraints',
+      ])
+    })
+
+    it('should return status code 400 when price is negative', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/tickets/create')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'Valid Ticket Title',
           price: -25,
         })
-        .expect(400)
 
-      await request(app.getHttpServer())
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual(['price must be a positive number'])
+    })
+
+    it('should return status code 400 when price is 0', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/tickets/create')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'Valid Ticket Title',
           price: 0,
         })
-        .expect(400)
 
-      await request(app.getHttpServer())
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual(['price must be a positive number'])
+    })
+
+    it('should return status code 400 when price is NaN', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/tickets/create')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'Valid Ticket Title',
           price: NaN,
         })
-        .expect(400)
 
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual([
+        'price must be a positive number',
+        'price must be a number conforming to the specified constraints',
+      ])
+    })
+
+    it('should return status code 400 when price has more than 2 floating numbers', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/tickets/create')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'Valid Ticket Title',
+          price: 23.456,
+        })
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual([
+        'price must be a number conforming to the specified constraints',
+      ])
+    })
+
+    it('should return status code 400 trying to create a token with title/slug that already exists', async () => {
       await request(app.getHttpServer())
         .post('/api/tickets/create')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           title: 'Valid Ticket Title',
-          price: 25.987,
+          price: 23.45,
         })
-        .expect(400)
+
+      const response = await request(app.getHttpServer())
+        .post('/api/tickets/create')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'Valid Ticket Title',
+          price: 23.45,
+        })
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.body.message).toEqual(
+        'Ticket with title/slug already exists',
+      )
     })
 
     it('should return status code 201 when successfully created a token', async () => {

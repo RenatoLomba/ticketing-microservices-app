@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator'
 
 export class UpdateTicketDto {
   @IsString()
@@ -7,6 +13,7 @@ export class UpdateTicketDto {
   title?: string
 
   @IsNumber({ allowInfinity: false, allowNaN: false, maxDecimalPlaces: 2 })
+  @IsPositive()
   @IsOptional()
   price?: number
 }

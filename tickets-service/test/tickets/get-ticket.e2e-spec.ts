@@ -18,7 +18,7 @@ describe('TicketsController (e2e)', () => {
     await app.init()
   })
 
-  describe('createTicket', () => {
+  describe('getTicket', () => {
     let accessToken: string
 
     beforeEach(() => {
