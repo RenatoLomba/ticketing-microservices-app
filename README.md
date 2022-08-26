@@ -36,3 +36,12 @@ SAVE AND CLOSE THE FILE
 ```
 
 7. Then, open your browser and type *ticketing.dev* on the address bar, you gonna fall into a security warning (only development), to bypass that, type *thisisunsafe* on the browser, then you will get the client home page.
+
+## Testing
+
+1. Each nest project has it's unique set of tests detailed on the README.md file inside each.
+2. To run nats-test project, you need to initialize the skaffold to run our config files, then you need to port forward the nats pod into your local machine, to do so, type:
+
+```
+kubectl port-forward <nats-pod-name> 4222:4222
+```
