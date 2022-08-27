@@ -11,6 +11,8 @@ stan.on('connect', () => {
   console.log('Listener connected to NATS...')
 
   // Subscribe to a channel ticket:created
+  // Queue group are for that the event got send to just one member of the queue group at a time
+  // Other listeners outside the queue group will receive the event as well
   const subscription = stan.subscribe('ticket:created', 'listener-queue-group')
 
   // Listen to the message event on the subscription
