@@ -13,6 +13,12 @@ const stan = nats.connect('ticketing',
 stan.on('connect', () => {
   console.log('Listener connected to NATS...')
 
+  // On connection close, shuts the process down, to not receive anymore events
+  stan.on('close', () => {
+    console.log('NATS connection closed!')
+    process.exit()
+  })
+
   const options = stan.subscriptionOptions()
     // Event must be manually acknowledged, otherwise NATS will send the event again
     .setManualAckMode(true)
@@ -38,3 +44,7 @@ stan.on('connect', () => {
     msg.ack()
   })
 })
+
+// Whenever the service is shut down (restart or completely off), close the connection to NATS
+process.on('SIGINT', () => stan.close())
+process.on('SIGTERM', () => stan.close())
