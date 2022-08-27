@@ -2,7 +2,7 @@ import nats from 'node-nats-streaming'
 
 console.clear()
 
-const stan = nats.connect('ticketing', 'abc', {
+const stan = nats.connect('ticketing', 'publisher-client', {
   url: 'http://localhost:4222'
 })
 
