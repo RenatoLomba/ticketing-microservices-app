@@ -11,7 +11,7 @@ stan.on('connect', () => {
   console.log('Listener connected to NATS...')
 
   // Subscribe to a channel ticket:created
-  const subscription = stan.subscribe('ticket:created')
+  const subscription = stan.subscribe('ticket:created', 'listener-queue-group')
 
   // Listen to the message event on the subscription
   subscription.on('message', (msg: Message) => {
