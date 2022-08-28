@@ -22,12 +22,20 @@ stan.on('connect', () => {
   const options = stan.subscriptionOptions()
     // Event must be manually acknowledged, otherwise NATS will send the event again
     .setManualAckMode(true)
+    // On the first time our service start, deliver all events, after that,
+    // just deliver the unprocessed events
+    .setDeliverAllAvailable()
+    // Create a durable name to store events, if they had already been processed,
+    // will not deliver them again to the same service
+    .setDurableName('listener-service')
 
   // Subscribe to a channel ticket:created
   // Queue group are for that the event got send to just one member of the queue group at a time
   // Other listeners outside the queue group will receive the event as well
   const subscription = stan.subscribe(
-    'ticket:created', 'listener-queue-group', options
+    'ticket:created', 
+    'listener-queue-group',
+    options
   )
 
   // Listen to the message event on the subscription
