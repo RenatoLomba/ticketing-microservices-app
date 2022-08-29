@@ -19,38 +19,9 @@ stan.on('connect', () => {
     process.exit()
   })
 
-  const options = stan.subscriptionOptions()
-    // Event must be manually acknowledged, otherwise NATS will send the event again
-    .setManualAckMode(true)
-    // On the first time our service start, deliver all events, after that,
-    // just deliver the unprocessed events
-    .setDeliverAllAvailable()
-    // Create a durable name to store events, if they had already been processed,
-    // will not deliver them again to the same service
-    .setDurableName('listener-service')
+  const ticketCreatedListener = new TicketCreatedListener(stan)
 
-  // Subscribe to a channel ticket:created
-  // Queue group are for that the event got send to just one member of the queue group at a time
-  // Other listeners outside the queue group will receive the event as well
-  const subscription = stan.subscribe(
-    'ticket:created', 
-    'listener-queue-group',
-    options
-  )
-
-  // Listen to the message event on the subscription
-  subscription.on('message', (msg: Message) => {
-    const data = msg.getData()
-
-    if(typeof data !== 'string') return
-
-    console.log('Message sequence: ', msg.getSequence())
-    console.log('Message data: ', JSON.parse(data))
-
-    // Manually acknowledge that the event is processed successfully, 
-    // otherwise it would be sent again until it is acknowledged
-    msg.ack()
-  })
+  ticketCreatedListener.listen()
 })
 
 // Whenever the service is shut down (restart or completely off), close the connection to NATS
@@ -68,19 +39,28 @@ abstract class Listener {
 
   subscriptionOptions() {
     return this.client.subscriptionOptions()
+      // On the first time our service start, deliver all events, after that,
+      // just deliver the unprocessed events
       .setDeliverAllAvailable()
+      // Event must be manually acknowledged, otherwise NATS will send the event again
       .setManualAckMode(true)
       .setAckWait(this.ackWait)
+      // Create a durable name to store events, if they had already been processed,
+      // will not deliver them again to the same service
       .setDurableName(this.queueGroupName)
   }
 
   listen() {
+    // Subscribe to a channel ticket:created
+    // Queue group are for that the event got send to just one member of the queue group at a time
+    // Other listeners outside the queue group will receive the event as well
     const subscription = this.client.subscribe(
       this.subject,
       this.queueGroupName,
       this.subscriptionOptions()
     )
 
+    // Listen to the message event on the subscription
     subscription.on('message', (msg: Message) => {
       console.log(
         `Message received: ${this.subject} / ${this.queueGroupName}`
@@ -98,5 +78,23 @@ abstract class Listener {
     return typeof data === 'string' 
       ? JSON.parse(data) 
       : JSON.parse(data.toString('utf8'))
+  }
+}
+
+class TicketCreatedListener extends Listener {
+  subject = 'ticket:created'
+
+  queueGroupName = 'payments-service'
+
+  constructor(client: Stan) {
+    super(client)
+  }
+
+  onMessage(data: any, msg: nats.Message): void {
+    console.log('Event data!', data)
+
+    // Manually acknowledge that the event is processed successfully, 
+    // otherwise it would be sent again until it is acknowledged
+    msg.ack()
   }
 }
