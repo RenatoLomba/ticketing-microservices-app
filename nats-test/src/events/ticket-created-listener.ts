@@ -1,11 +1,12 @@
 import { Message, Stan } from "node-nats-streaming"
 
 import { Listener } from "./abstract-listener"
+import { Subjects } from "./subjects"
 
 export class TicketCreatedListener extends Listener {
-  subject = 'ticket:created'
+  subject = Subjects.TicketCreated;
 
-  queueGroupName = 'payments-service'
+  queueGroupName = 'payments-service';
 
   constructor(client: Stan) {
     super(client)
