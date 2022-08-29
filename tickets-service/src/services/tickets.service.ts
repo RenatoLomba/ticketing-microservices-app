@@ -1,8 +1,25 @@
-import { ForbiddenException, Injectable } from '@nestjs/common'
+import slugify from 'slugify'
+
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { PrismaService } from '../database/prisma/prisma.service'
+
+type CreateTicketDto = {
+  title: string
+  price: number
+  userId: string
+}
+
+type UpdateTicketDto = {
+  title?: string
+  price?: number
+}
 
 @Injectable()
 export class TicketsService {
@@ -37,10 +54,27 @@ export class TicketsService {
     return await this.prisma.ticket.findUnique({ where })
   }
 
-  async createTicket(data: Prisma.TicketCreateInput) {
+  async createTicket({ title, price, userId }: CreateTicketDto) {
+    const slug = slugify(title, {
+      lower: true,
+      trim: true,
+      strict: true,
+    })
+
+    const ticket = await this.ticket({ slug })
+
+    if (!!ticket) {
+      throw new BadRequestException('Ticket with title/slug already exists')
+    }
+
     return this.prisma.ticket
       .create({
-        data,
+        data: {
+          title,
+          price,
+          userId,
+          slug,
+        },
       })
       .catch((error) => {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -53,16 +87,37 @@ export class TicketsService {
       })
   }
 
-  async updateTicket(params: {
-    where: Prisma.TicketWhereUniqueInput
-    data: Prisma.TicketUpdateInput
-  }) {
-    const { where, data } = params
+  async updateTicket({ title, price }: UpdateTicketDto, id: string) {
+    const updateData: { price?: number; title?: string; slug?: string } = {
+      title,
+      price,
+    }
+
+    if (title) {
+      updateData.slug = slugify(title, {
+        lower: true,
+        trim: true,
+        strict: true,
+      })
+
+      const ticketWithSlugAlreadyExistent = await this.ticket({
+        slug: updateData.slug,
+      })
+
+      if (
+        !!ticketWithSlugAlreadyExistent &&
+        ticketWithSlugAlreadyExistent.id !== id
+      ) {
+        throw new BadRequestException('Ticket with title/slug already exists')
+      }
+    }
 
     return this.prisma.ticket
       .update({
-        data,
-        where,
+        data: updateData,
+        where: {
+          id,
+        },
       })
       .catch((error) => {
         if (error instanceof PrismaClientKnownRequestError) {

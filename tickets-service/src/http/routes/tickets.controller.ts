@@ -1,5 +1,3 @@
-import slugify from 'slugify'
-
 import {
   BadRequestException,
   Body,
@@ -46,20 +44,7 @@ export class TicketsController {
     @Body() { price, title }: CreateTicketDto,
     @CurrentUser() user: User,
   ) {
-    const slug = slugify(title, {
-      lower: true,
-      trim: true,
-      strict: true,
-    })
-
-    const ticket = await this.ticketsService.ticket({ slug })
-
-    if (!!ticket) {
-      throw new BadRequestException('Ticket with title/slug already exists')
-    }
-
     return this.ticketsService.createTicket({
-      slug,
       price,
       title,
       userId: user.id,
@@ -83,33 +68,6 @@ export class TicketsController {
       throw new UnauthorizedException('You cannot update this ticket')
     }
 
-    const updateData: { price?: number; title?: string; slug?: string } = {
-      title,
-      price,
-    }
-
-    if (title) {
-      updateData.slug = slugify(title, {
-        lower: true,
-        trim: true,
-        strict: true,
-      })
-
-      const ticketWithSlugAlreadyExistent = await this.ticketsService.ticket({
-        slug: updateData.slug,
-      })
-
-      if (
-        !!ticketWithSlugAlreadyExistent &&
-        ticketWithSlugAlreadyExistent.id !== ticket.id
-      ) {
-        throw new BadRequestException('Ticket with title/slug already exists')
-      }
-    }
-
-    return this.ticketsService.updateTicket({
-      where: { id },
-      data: updateData,
-    })
+    return this.ticketsService.updateTicket({ price, title }, id)
   }
 }
