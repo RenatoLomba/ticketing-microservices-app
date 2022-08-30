@@ -13,9 +13,19 @@ export abstract class Publisher<T extends Event> {
   constructor(private client: Stan) {}
 
   publish(data: T['data']) {
-    // Publish data to a channel/subject
-    this.client.publish(this.subject, JSON.stringify(data), () => {
-      console.log('Event callback!')
+
+    return new Promise<void>((resolve, reject) => {
+
+      // Publish data to a channel/subject
+      this.client.publish(this.subject, JSON.stringify(data), (err) => {
+        if(err) {
+          return reject(err)
+        }
+
+        console.log('Event published to subject', this.subject)
+
+        resolve()
+      })
     })
   }
 }
