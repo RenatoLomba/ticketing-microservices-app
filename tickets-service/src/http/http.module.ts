@@ -24,7 +24,11 @@ import { TicketsController } from './routes/tickets.controller'
           url: 'http://nats-srv:4222',
         })
 
-        return new Promise<Stan>((resolve) => {
+        return new Promise<Stan>((resolve, reject) => {
+          stan.on('error', (err) => {
+            reject(err)
+          })
+
           stan.on('connect', () => {
             console.log('Tickets Service Publisher connected to NATS...')
 
