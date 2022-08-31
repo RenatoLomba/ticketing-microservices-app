@@ -23,14 +23,6 @@ import { TicketCreatedPublisher } from './publishers/ticket-created.publisher'
           stan.on('connect', () => {
             console.log('[NATS]', 'Connect')
 
-            stan.on('close', () => {
-              console.log('[NATS]', 'Closed')
-              process.exit()
-            })
-
-            process.on('SIGINT', () => stan.close())
-            process.on('SIGTERM', () => stan.close())
-
             resolve(stan)
           })
         })
