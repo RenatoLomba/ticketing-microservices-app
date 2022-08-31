@@ -16,17 +16,17 @@ import { TicketCreatedPublisher } from './publishers/ticket-created.publisher'
             url: 'http://nats-srv:4222',
           })
 
-          stan.on('close', () => {
-            console.log('NATS connection closed!')
-            process.exit()
-          })
-
           stan.on('error', (err) => {
             reject(err)
           })
 
           stan.on('connect', () => {
-            console.log('Tickets Service Publisher connected to NATS...')
+            console.log('[NATS]', 'Connect')
+
+            stan.on('close', () => {
+              console.log('[NATS]', 'Closed')
+              process.exit()
+            })
 
             process.on('SIGINT', () => stan.close())
             process.on('SIGTERM', () => stan.close())
