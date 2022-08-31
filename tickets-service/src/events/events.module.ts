@@ -11,17 +11,25 @@ import { TicketCreatedPublisher } from './publishers/ticket-created.publisher'
       useFactory: async () => {
         const nats = await import('node-nats-streaming')
 
-        const stan = nats.connect('ticketing', 'tickets-service-publisher', {
-          url: 'http://nats-srv:4222',
-        })
-
         return new Promise<Stan>((resolve, reject) => {
+          const stan = nats.connect('ticketing', 'tickets-service-publisher', {
+            url: 'http://nats-srv:4222',
+          })
+
+          stan.on('close', () => {
+            console.log('NATS connection closed!')
+            process.exit()
+          })
+
           stan.on('error', (err) => {
             reject(err)
           })
 
           stan.on('connect', () => {
             console.log('Tickets Service Publisher connected to NATS...')
+
+            process.on('SIGINT', () => stan.close())
+            process.on('SIGTERM', () => stan.close())
 
             resolve(stan)
           })
