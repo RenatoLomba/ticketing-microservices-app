@@ -12,13 +12,17 @@ import {
 } from '@nestjs/common'
 import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
+import { TicketCreatedPublisher } from '../../events/publishers/ticket-created.publisher'
 import { TicketsService } from '../../services/tickets.service'
 import { CreateTicketDto } from '../dtos/create-ticket.dto'
 import { UpdateTicketDto } from '../dtos/update-ticket.dto'
 
 @Controller('/api/tickets')
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(
+    private readonly ticketsService: TicketsService,
+    private readonly ticketCreatedPublisher: TicketCreatedPublisher,
+  ) {}
 
   @Get('/list')
   @HttpCode(200)
@@ -44,11 +48,15 @@ export class TicketsController {
     @Body() { price, title }: CreateTicketDto,
     @CurrentUser() user: User,
   ) {
-    return this.ticketsService.createTicket({
+    const ticket = await this.ticketsService.createTicket({
       price,
       title,
       userId: user.id,
     })
+
+    await this.ticketCreatedPublisher.publish(ticket)
+
+    return ticket
   }
 
   @UseGuards(JwtAuthGuard)

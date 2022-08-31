@@ -10,6 +10,7 @@ async function bootstrap() {
       transform: true,
     }),
   )
+
   await app.listen(5001, () => {
     console.log('[App]', `Running on port 5001`)
   })
