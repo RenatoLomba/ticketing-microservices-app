@@ -5,9 +5,9 @@ import { INestApplication } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { User } from '@rntlombatickets/common'
 
+import { authTokenMock } from '../__mocks__/auth-token.mock'
+import { createNestAppMock } from '../__mocks__/create-nest-app.mock'
 import { PrismaService } from '../../src/database/prisma/prisma.service'
-import { authTokenMock } from '../utils/auth-token.mock'
-import { createNestApp } from '../utils/create-nest-app'
 
 describe('TicketsController (e2e)', () => {
   let app: INestApplication
@@ -15,7 +15,7 @@ describe('TicketsController (e2e)', () => {
   let prisma: PrismaService
 
   beforeEach(async () => {
-    app = await createNestApp()
+    app = await createNestAppMock()
 
     configService = app.get<ConfigService>(ConfigService)
     prisma = app.get<PrismaService>(PrismaService)
