@@ -8,7 +8,9 @@
     "listener": "ts-node-dev --rs --notify false src/listener.ts"
   },
   "dependencies": {
-    "node-nats-streaming": "^0.3.2"
+    "@rntlombatickets/common": "^1.0.8",
+    "node-nats-streaming": "^0.3.2",
+    "passport": "^0.6.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.13",

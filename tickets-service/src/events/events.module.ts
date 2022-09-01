@@ -3,6 +3,7 @@ import { Stan } from 'node-nats-streaming'
 import { Module } from '@nestjs/common'
 
 import { TicketCreatedPublisher } from './publishers/ticket-created.publisher'
+import { TicketUpdatedPublisher } from './publishers/ticket-updated.publisher'
 
 @Module({
   providers: [
@@ -29,7 +30,8 @@ import { TicketCreatedPublisher } from './publishers/ticket-created.publisher'
       },
     },
     TicketCreatedPublisher,
+    TicketUpdatedPublisher,
   ],
-  exports: [TicketCreatedPublisher],
+  exports: [TicketCreatedPublisher, TicketUpdatedPublisher],
 })
 export class EventsModule {}

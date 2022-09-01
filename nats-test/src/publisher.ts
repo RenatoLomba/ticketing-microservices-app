@@ -15,8 +15,11 @@ stan.on('connect', async () => {
   try {
     await ticketCreatedPublisher.publish({
       id: '156',
-      title: 'concert',
-      price: 20
+      title: 'Concert',
+      price: 20,
+      createdAt: new Date(),
+      slug: 'concert',
+      userId: '123'
     })
   } catch(err) {
     console.error(err)

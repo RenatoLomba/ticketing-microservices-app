@@ -1,13 +1,10 @@
-import { Message, Stan } from "node-nats-streaming"
-
-import { Listener } from "./abstract-listener"
-import { Subjects } from "./subjects"
-import { TicketCreatedEvent } from "./ticket-created-event";
+import { Message, Stan } from "node-nats-streaming";
+import { Listener, Subjects, TicketCreatedEvent } from "@rntlombatickets/common";
 
 export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
   readonly subject = Subjects.TicketCreated;
 
-  queueGroupName = 'payments-service';
+  queueGroupName = 'tickets-service';
 
   constructor(client: Stan) {
     super(client)

@@ -13,6 +13,7 @@ import {
 import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
 import { TicketCreatedPublisher } from '../../events/publishers/ticket-created.publisher'
+import { TicketUpdatedPublisher } from '../../events/publishers/ticket-updated.publisher'
 import { TicketsService } from '../../services/tickets.service'
 import { CreateTicketDto } from '../dtos/create-ticket.dto'
 import { UpdateTicketDto } from '../dtos/update-ticket.dto'
@@ -22,6 +23,7 @@ export class TicketsController {
   constructor(
     private readonly ticketsService: TicketsService,
     private readonly ticketCreatedPublisher: TicketCreatedPublisher,
+    private readonly ticketUpdatedPublisher: TicketUpdatedPublisher,
   ) {}
 
   @Get('/list')
@@ -76,6 +78,13 @@ export class TicketsController {
       throw new UnauthorizedException('You cannot update this ticket')
     }
 
-    return this.ticketsService.updateTicket({ price, title }, id)
+    const ticketUpdated = await this.ticketsService.updateTicket(
+      { price, title },
+      id,
+    )
+
+    await this.ticketUpdatedPublisher.publish(ticketUpdated)
+
+    return ticketUpdated
   }
 }
