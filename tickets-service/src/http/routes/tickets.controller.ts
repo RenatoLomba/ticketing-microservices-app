@@ -83,7 +83,7 @@ export class TicketsController {
       id,
     )
 
-    await this.ticketUpdatedPublisher.publish(ticketUpdated)
+    this.ticketUpdatedPublisher.publish(ticketUpdated)
 
     return ticketUpdated
   }
