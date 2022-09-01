@@ -56,7 +56,7 @@ export class TicketsController {
       userId: user.id,
     })
 
-    await this.ticketCreatedPublisher.publish(ticket)
+    this.ticketCreatedPublisher.publish(ticket)
 
     return ticket
   }
