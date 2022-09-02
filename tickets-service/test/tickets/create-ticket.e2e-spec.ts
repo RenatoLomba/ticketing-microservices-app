@@ -1,3 +1,4 @@
+import { Stan } from 'node-nats-streaming'
 import * as request from 'supertest'
 
 import { INestApplication } from '@nestjs/common'
@@ -10,11 +11,13 @@ import { createNestAppMock } from '../__mocks__/create-nest-app.mock'
 describe('TicketsController (e2e)', () => {
   let app: INestApplication
   let configService: ConfigService
+  let natsClient: Stan
 
   beforeEach(async () => {
     app = await createNestAppMock()
 
     configService = app.get<ConfigService>(ConfigService)
+    natsClient = app.get<Stan>('NATS_STREAMING_CONNECTION')
 
     await app.init()
   })
@@ -24,6 +27,8 @@ describe('TicketsController (e2e)', () => {
     let accessToken: string
 
     beforeEach(() => {
+      jest.clearAllMocks()
+
       const { access_token, user } = authTokenMock(configService)
       currentUser = user
       accessToken = access_token
@@ -193,6 +198,18 @@ describe('TicketsController (e2e)', () => {
       expect(response.statusCode).toEqual(201)
       expect(response.body).toHaveProperty('slug')
       expect(response.body.userId).toEqual(currentUser.id)
+    })
+
+    it('should publish the ticket created event with data about the ticket', async () => {
+      await request(app.getHttpServer())
+        .post('/api/tickets/create')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'Valid Ticket Title',
+          price: 29.99,
+        })
+
+      expect(natsClient.publish).toHaveBeenCalled()
     })
   })
 })

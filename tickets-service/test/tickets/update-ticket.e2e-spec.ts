@@ -1,3 +1,4 @@
+import { Stan } from 'node-nats-streaming'
 import * as request from 'supertest'
 
 import { faker } from '@faker-js/faker'
@@ -13,12 +14,14 @@ describe('TicketsController (e2e)', () => {
   let app: INestApplication
   let configService: ConfigService
   let prisma: PrismaService
+  let natsClient: Stan
 
   beforeEach(async () => {
     app = await createNestAppMock()
 
     configService = app.get<ConfigService>(ConfigService)
     prisma = app.get<PrismaService>(PrismaService)
+    natsClient = app.get<Stan>('NATS_STREAMING_CONNECTION')
 
     await app.init()
   })
@@ -28,6 +31,8 @@ describe('TicketsController (e2e)', () => {
     let accessToken: string
 
     beforeEach(() => {
+      jest.clearAllMocks()
+
       const { access_token, user } = authTokenMock(configService)
       currentUser = user
       accessToken = access_token
@@ -213,6 +218,31 @@ describe('TicketsController (e2e)', () => {
       expect(response.body.title).toEqual(updateDto.title)
       expect(response.body.price).toEqual(updateDto.price)
       expect(response.body.slug).toEqual('valid-ticket-title-updated')
+    })
+
+    it('should publish the ticket updated event with data about the ticket', async () => {
+      const ticket = await prisma.ticket.create({
+        data: {
+          id: faker.datatype.uuid(),
+          title: 'Valid Ticket Title',
+          price: 12.34,
+          slug: 'valid-ticket-title',
+          userId: currentUser.id,
+          createdAt: new Date(),
+        },
+      })
+
+      const updateDto = {
+        title: 'Valid Ticket Title UPDATED',
+        price: 45.67,
+      }
+
+      await request(app.getHttpServer())
+        .put(`/api/tickets/update/${ticket.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(updateDto)
+
+      expect(natsClient.publish).toHaveBeenCalled()
     })
   })
 })
