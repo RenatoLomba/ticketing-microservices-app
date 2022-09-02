@@ -1,5 +1,7 @@
 export const natsStanMock = () => {
   return {
-    publish: jest.fn(),
+    publish: jest.fn((_: string, __: string, callback: () => void) => {
+      callback()
+    }),
   }
 }
