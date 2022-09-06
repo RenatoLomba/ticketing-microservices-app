@@ -18,7 +18,7 @@ kubectl create secret generic <name> --from-literal=<key>=<value>
 The list of secrets needed for the system to work is:
   - **name**: postgres, **key**: POSTGRES_PSW
   - **name**: jwt-secret, **key**: JWT_KEY
-5. To run all the config files inside the infra/k8s directory, you can go to the root of the project via terminal, and type:
+5. To run all the config files inside the infra/k8s directory, you need to install skaffold on the root of your project and add it to your bin path, you can do that by following the steps on this guide https://skaffold.dev/docs/install, then with skaffold successfully installed, type:
 
 ```
 skaffold dev
