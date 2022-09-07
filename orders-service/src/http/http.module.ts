@@ -6,7 +6,6 @@ import { DatabaseModule } from '../database/database.module'
 import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
 import { GetOrderDetailsHandler } from '../handlers/get-order-details.handler'
 import { GetUserPendingOrdersHandler } from '../handlers/get-user-pending-orders.handler'
-import { OrdersService } from '../services/orders.service'
 import { OrdersController } from './routes/orders.controller'
 
 @Module({
@@ -14,7 +13,6 @@ import { OrdersController } from './routes/orders.controller'
   controllers: [OrdersController],
   providers: [
     JwtStrategy,
-    OrdersService,
     CreatePendingOrderHandler,
     GetUserPendingOrdersHandler,
     GetOrderDetailsHandler,

@@ -13,13 +13,11 @@ import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 import { CreatePendingOrderHandler } from '../../handlers/create-pending-order.handler'
 import { GetOrderDetailsHandler } from '../../handlers/get-order-details.handler'
 import { GetUserPendingOrdersHandler } from '../../handlers/get-user-pending-orders.handler'
-import { OrdersService } from '../../services/orders.service'
 import { CreateOrderDto } from '../dtos/create-order.dto'
 
 @Controller('/api/orders')
 export class OrdersController {
   constructor(
-    private readonly ordersService: OrdersService,
     private readonly createPendingOrder: CreatePendingOrderHandler,
     private readonly getUserPendingOrders: GetUserPendingOrdersHandler,
     private readonly getOrderDetails: GetOrderDetailsHandler,
