@@ -19,8 +19,6 @@ import { TicketCreatedListener } from './listeners/ticket-created.listener'
         const natsClientId = config.get<string>('NATS_CLIENT_ID')
         const natsUrl = config.get<string>('NATS_URL')
 
-        console.log('NATS_STREAMING_CONNECTION', { natsClusterId })
-
         return new Promise<Stan>((resolve, reject) => {
           const stan = nats.connect(natsClusterId, natsClientId, {
             url: natsUrl,

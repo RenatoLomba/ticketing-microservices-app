@@ -28,11 +28,6 @@ async function bootstrap() {
     TicketCreatedListener,
   )
 
-  console.log(
-    ticketCreatedListener.subject,
-    ticketCreatedListener.queueGroupName,
-  )
-
   ticketCreatedListener.listen()
 
   await app.listen(5001, () => {

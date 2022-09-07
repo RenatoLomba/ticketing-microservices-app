@@ -23,8 +23,6 @@ export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
     data: TicketCreatedEvent['data'],
     msg: Message,
   ): Promise<void> {
-    console.log('Ticket Created', data)
-
     await this.createProduct.execute({
       externalId: data.id,
       price: data.price,
