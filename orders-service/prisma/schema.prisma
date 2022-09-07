@@ -34,4 +34,6 @@ model Order {
   productId String
   product   Product     @relation(references: [id], fields: [productId])
   createdAt DateTime    @default(now())
+
+  @@index([userId])
 }

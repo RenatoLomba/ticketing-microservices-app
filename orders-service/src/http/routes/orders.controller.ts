@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -12,14 +11,14 @@ import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
 import { CreatePendingOrderHandler } from '../../handlers/create-pending-order.handler'
 import { GetOrderDetailsHandler } from '../../handlers/get-order-details.handler'
-import { GetUserPendingOrdersHandler } from '../../handlers/get-user-pending-orders.handler'
+import { GetUserOrdersHandler } from '../../handlers/get-user-orders.handler'
 import { CreateOrderDto } from '../dtos/create-order.dto'
 
 @Controller('/api/orders')
 export class OrdersController {
   constructor(
     private readonly createPendingOrder: CreatePendingOrderHandler,
-    private readonly getUserPendingOrders: GetUserPendingOrdersHandler,
+    private readonly getUserOrders: GetUserOrdersHandler,
     private readonly getOrderDetails: GetOrderDetailsHandler,
   ) {}
 
@@ -32,21 +31,15 @@ export class OrdersController {
   @Get('/:id')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  async getOrder(@Param('id') id: string) {
-    const order = await this.getOrderDetails.execute({ orderId: id })
-
-    if (!order) {
-      throw new BadRequestException('Order request does not exists')
-    }
-
-    return order
+  getOrder(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.getOrderDetails.execute({ orderId: id, userId: user.id })
   }
 
-  @Get('/list/pending')
+  @Get('/list/all')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  getPendingOrders(@CurrentUser() user: User) {
-    return this.getUserPendingOrders.execute({ userId: user.id })
+  getOrders(@CurrentUser() user: User) {
+    return this.getUserOrders.execute({ userId: user.id })
   }
 
   @Post('/create')

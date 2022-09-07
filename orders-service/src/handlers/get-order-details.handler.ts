@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 
 interface IGetOrderDetailsHandlerDto {
   orderId: string
+  userId: string
 }
 
 @Injectable()
 export class GetOrderDetailsHandler {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute({ orderId }: IGetOrderDetailsHandlerDto) {
+  async execute({ orderId, userId }: IGetOrderDetailsHandlerDto) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
       select: {
@@ -23,6 +28,16 @@ export class GetOrderDetailsHandler {
         productId: true,
       },
     })
+
+    if (!order) {
+      throw new BadRequestException('Order request does not exists')
+    }
+
+    if (order.userId !== userId) {
+      throw new ForbiddenException(
+        'The order requested cannot be accessed by this user',
+      )
+    }
 
     return order
   }

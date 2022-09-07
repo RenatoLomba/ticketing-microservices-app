@@ -2,19 +2,18 @@ import { Injectable } from '@nestjs/common'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 
-interface IGetUserPendingOrdersHandlerDto {
+interface IGetUserOrdersHandlerDto {
   userId: string
 }
 
 @Injectable()
-export class GetUserPendingOrdersHandler {
+export class GetUserOrdersHandler {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute({ userId }: IGetUserPendingOrdersHandlerDto) {
+  async execute({ userId }: IGetUserOrdersHandlerDto) {
     const orders = await this.prisma.order.findMany({
       where: {
         userId,
-        status: 'PENDING',
       },
       select: {
         id: true,
