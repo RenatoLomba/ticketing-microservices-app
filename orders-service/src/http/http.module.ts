@@ -4,12 +4,18 @@ import { JwtStrategy } from '@rntlombatickets/common'
 
 import { DatabaseModule } from '../database/database.module'
 import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
+import { GetUserPendingOrdersHandler } from '../handlers/get-user-pending-orders.handler'
 import { OrdersService } from '../services/orders.service'
 import { OrdersController } from './routes/orders.controller'
 
 @Module({
   imports: [ConfigModule, DatabaseModule],
   controllers: [OrdersController],
-  providers: [JwtStrategy, OrdersService, CreatePendingOrderHandler],
+  providers: [
+    JwtStrategy,
+    OrdersService,
+    CreatePendingOrderHandler,
+    GetUserPendingOrdersHandler,
+  ],
 })
 export class HttpModule {}

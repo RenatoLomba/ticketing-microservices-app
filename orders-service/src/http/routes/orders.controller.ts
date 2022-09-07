@@ -9,6 +9,7 @@ import {
 import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
 import { CreatePendingOrderHandler } from '../../handlers/create-pending-order.handler'
+import { GetUserPendingOrdersHandler } from '../../handlers/get-user-pending-orders.handler'
 import { OrdersService } from '../../services/orders.service'
 import { CreateOrderDto } from '../dtos/create-order.dto'
 
@@ -17,6 +18,7 @@ export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly createPendingOrder: CreatePendingOrderHandler,
+    private readonly getUserPendingOrders: GetUserPendingOrdersHandler,
   ) {}
 
   @Get('/healthcheck')
@@ -30,6 +32,13 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   getOrder() {
     return this.ordersService.order()
+  }
+
+  @Get('/list/pending')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  getPendingOrders(@CurrentUser() user: User) {
+    return this.getUserPendingOrders.execute({ userId: user.id })
   }
 
   @Post('/create')
