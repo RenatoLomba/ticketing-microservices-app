@@ -58,7 +58,7 @@
     "eslint-plugin-import-helpers": "^1.2.1",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "28.1.2",
-    "jest-mock-extended": "2.0.4",
+    "jest-mock-extended": "^2.0.7",
     "prettier": "^2.3.2",
     "prisma": "^4.1.0",
     "prisma-mock": "^0.0.33",
