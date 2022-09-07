@@ -1,14 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common'
 import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
 import { CreatePendingOrderHandler } from '../../handlers/create-pending-order.handler'
+import { GetOrderDetailsHandler } from '../../handlers/get-order-details.handler'
 import { GetUserPendingOrdersHandler } from '../../handlers/get-user-pending-orders.handler'
 import { OrdersService } from '../../services/orders.service'
 import { CreateOrderDto } from '../dtos/create-order.dto'
@@ -19,6 +22,7 @@ export class OrdersController {
     private readonly ordersService: OrdersService,
     private readonly createPendingOrder: CreatePendingOrderHandler,
     private readonly getUserPendingOrders: GetUserPendingOrdersHandler,
+    private readonly getOrderDetails: GetOrderDetailsHandler,
   ) {}
 
   @Get('/healthcheck')
@@ -30,8 +34,14 @@ export class OrdersController {
   @Get('/:id')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  getOrder() {
-    return this.ordersService.order()
+  async getOrder(@Param('id') id: string) {
+    const order = await this.getOrderDetails.execute({ orderId: id })
+
+    if (!order) {
+      throw new BadRequestException('Order request does not exists')
+    }
+
+    return order
   }
 
   @Get('/list/pending')
