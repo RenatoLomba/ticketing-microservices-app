@@ -4,21 +4,27 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { PrismaService } from '../database/prisma/prisma.service'
+import { GetProductByExternal } from './get-product-by-external.handler'
 
 interface ICreatePendingOrderHandlerDto {
-  productId: string
+  externalId: string
   userId: string
 }
 
 @Injectable()
 export class CreatePendingOrderHandler {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly getProductByExternal: GetProductByExternal,
+  ) {}
 
-  async execute({ productId, userId }: ICreatePendingOrderHandlerDto) {
+  async execute({ externalId, userId }: ICreatePendingOrderHandlerDto) {
+    const product = await this.getProductByExternal.execute({ externalId })
+
     return this.prisma.order
       .create({
         data: {
-          productId,
+          productId: product.id,
           userId,
           status: 'PENDING',
           expiresAt: addMinutes(new Date(), 15),

@@ -45,9 +45,9 @@ export class OrdersController {
   @Post('/create')
   @UseGuards(JwtAuthGuard)
   createOrder(
-    @Body() { productId }: CreateOrderDto,
+    @Body() { externalId }: CreateOrderDto,
     @CurrentUser() user: User,
   ) {
-    return this.createPendingOrder.execute({ productId, userId: user.id })
+    return this.createPendingOrder.execute({ externalId, userId: user.id })
   }
 }

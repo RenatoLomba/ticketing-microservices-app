@@ -4,5 +4,5 @@ export class CreateOrderDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
-  productId: string
+  externalId: string
 }

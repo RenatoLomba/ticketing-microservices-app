@@ -30,8 +30,8 @@ async function bootstrap() {
 
   ticketCreatedListener.listen()
 
-  await app.listen(5001, () => {
-    console.log('[App]', `Running on port 5001`)
+  await app.listen(5002, () => {
+    console.log('[App]', `Running on port 5002`)
   })
 }
 bootstrap()
