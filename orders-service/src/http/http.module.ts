@@ -7,6 +7,7 @@ import { CreatePendingOrderHandler } from '../handlers/create-pending-order.hand
 import { GetOrderDetailsHandler } from '../handlers/get-order-details.handler'
 import { GetProductByExternal } from '../handlers/get-product-by-external.handler'
 import { GetUserOrdersHandler } from '../handlers/get-user-orders.handler'
+import { ValidateProductAvailabilityHandler } from '../handlers/validate-product-availability.handler'
 import { OrdersController } from './routes/orders.controller'
 
 @Module({
@@ -18,6 +19,7 @@ import { OrdersController } from './routes/orders.controller'
     GetUserOrdersHandler,
     GetOrderDetailsHandler,
     GetProductByExternal,
+    ValidateProductAvailabilityHandler,
   ],
 })
 export class HttpModule {}
