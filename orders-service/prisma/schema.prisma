@@ -21,7 +21,7 @@ model Product {
   title      String
   price      Float
   externalId String   @unique
-  version    Int
+  version    Int      @default(1)
   createdAt  DateTime @default(now())
   orders     Order[]
 }
@@ -30,7 +30,7 @@ model Order {
   id        String      @id @default(uuid())
   status    OrderStatus
   userId    String
-  expiresAt DateTime
+  expiresAt DateTime?
   productId String
   product   Product     @relation(references: [id], fields: [productId])
   createdAt DateTime    @default(now())

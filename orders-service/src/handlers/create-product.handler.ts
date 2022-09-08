@@ -20,7 +20,6 @@ export class CreateProductHandler {
           externalId,
           price,
           title,
-          version: 1,
         },
       })
       .catch((error) => {
