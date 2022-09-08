@@ -12,7 +12,7 @@ export class ValidateProductAvailabilityHandler {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute({ productId }: IValidateProductAvailabilityHandlerDto) {
-    const order = await this.prisma.order.findFirst({
+    const existingOrder = await this.prisma.order.findFirst({
       where: {
         productId,
         status: {
@@ -24,7 +24,7 @@ export class ValidateProductAvailabilityHandler {
       },
     })
 
-    if (!!order) {
+    if (!!existingOrder) {
       throw new BadRequestException('Product is unavailable at the moment')
     }
   }
