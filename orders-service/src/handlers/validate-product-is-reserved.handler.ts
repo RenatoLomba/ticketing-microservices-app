@@ -1,17 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ORDER_STATUS } from '@rntlombatickets/common'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 
-interface IValidateProductAvailabilityHandlerDto {
+interface IValidateProductIsReservedHandlerDto {
   productId: string
 }
 
 @Injectable()
-export class ValidateProductAvailabilityHandler {
+export class ValidateProductIsReservedHandler {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute({ productId }: IValidateProductAvailabilityHandlerDto) {
+  async execute({ productId }: IValidateProductIsReservedHandlerDto) {
     const existingOrder = await this.prisma.order.findFirst({
       where: {
         productId,
@@ -24,8 +24,6 @@ export class ValidateProductAvailabilityHandler {
       },
     })
 
-    if (!!existingOrder) {
-      throw new BadRequestException('Product is unavailable at the moment')
-    }
+    return !!existingOrder
   }
 }

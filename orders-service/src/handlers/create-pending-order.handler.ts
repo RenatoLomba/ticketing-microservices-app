@@ -6,7 +6,7 @@ import { ORDER_STATUS } from '@rntlombatickets/common'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 import { GetProductByExternal } from './get-product-by-external.handler'
-import { ValidateProductAvailabilityHandler } from './validate-product-availability.handler'
+import { ValidateProductIsReservedHandler } from './validate-product-is-reserved.handler'
 
 interface ICreatePendingOrderHandlerDto {
   externalId: string
@@ -18,7 +18,7 @@ export class CreatePendingOrderHandler {
   constructor(
     private readonly prisma: PrismaService,
     private readonly getProductByExternal: GetProductByExternal,
-    private readonly validateProductAvailability: ValidateProductAvailabilityHandler,
+    private readonly validateProductIsReserved: ValidateProductIsReservedHandler,
   ) {}
 
   async execute({ externalId, userId }: ICreatePendingOrderHandlerDto) {
@@ -26,7 +26,13 @@ export class CreatePendingOrderHandler {
 
     const productId = product.id
 
-    await this.validateProductAvailability.execute({ productId })
+    const productIsReserved = await this.validateProductIsReserved.execute({
+      productId,
+    })
+
+    if (productIsReserved) {
+      throw new BadRequestException('Product is already reserved')
+    }
 
     // Publish an event saying that an order was created
 
