@@ -28,6 +28,8 @@ export class CreatePendingOrderHandler {
 
     await this.validateProductAvailability.execute({ productId })
 
+    // Publish an event saying that an order was created
+
     return this.prisma.order
       .create({
         data: {

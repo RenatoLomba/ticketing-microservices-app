@@ -15,7 +15,9 @@ export class ValidateProductAvailabilityHandler {
     const order = await this.prisma.order.findFirst({
       where: {
         productId,
-        status: ORDER_STATUS.AWAITING_PAYMENT,
+        status: {
+          not: ORDER_STATUS.CANCELLED,
+        },
       },
       select: {
         id: true,
