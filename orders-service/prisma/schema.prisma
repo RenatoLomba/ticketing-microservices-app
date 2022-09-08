@@ -10,12 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OrderStatus {
-  EXPIRED
-  PAID
-  PENDING
-}
-
 model Product {
   id         String   @id @default(uuid())
   title      String
@@ -27,13 +21,13 @@ model Product {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  status    OrderStatus
+  id        String    @id @default(uuid())
+  status    Int
   userId    String
   expiresAt DateTime?
   productId String
-  product   Product     @relation(references: [id], fields: [productId])
-  createdAt DateTime    @default(now())
+  product   Product   @relation(references: [id], fields: [productId])
+  createdAt DateTime  @default(now())
 
   @@index([userId])
   @@index([productId, status])

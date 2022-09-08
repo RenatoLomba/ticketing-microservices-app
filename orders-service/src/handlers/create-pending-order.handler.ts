@@ -2,6 +2,7 @@ import { addMinutes } from 'date-fns'
 
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { ORDER_STATUS } from '@rntlombatickets/common'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 import { GetProductByExternal } from './get-product-by-external.handler'
@@ -32,7 +33,7 @@ export class CreatePendingOrderHandler {
         data: {
           productId,
           userId,
-          status: 'PENDING',
+          status: ORDER_STATUS.CREATED,
           expiresAt: addMinutes(new Date(), 15),
         },
       })

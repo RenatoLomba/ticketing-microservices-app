@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { ORDER_STATUS } from '@rntlombatickets/common'
 
 import { PrismaService } from '../database/prisma/prisma.service'
 
@@ -14,7 +15,7 @@ export class ValidateProductAvailabilityHandler {
     const order = await this.prisma.order.findFirst({
       where: {
         productId,
-        status: 'PENDING',
+        status: ORDER_STATUS.AWAITING_PAYMENT,
       },
       select: {
         id: true,
