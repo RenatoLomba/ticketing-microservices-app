@@ -7,5 +7,7 @@ Service for managing orders inside our system.
 To run tests:
 
 ```
-npm run test:e2e
+npm run test // unit tests
+npm run test:cov // collect coverage for unit tests
+npm run test:e2e // end to end tests
 ```
