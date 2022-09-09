@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker'
 import { ConfigService } from '@nestjs/config'
 
-import { authToken } from '../../../test/utils/auth-token'
-import { createNestApp } from '../../../test/utils/create-nest-app'
-import { PrismaService } from '../../database/prisma/prisma.service'
-import { CreatePendingOrderHandler } from '../create-pending-order.handler'
-import { GetUserOrdersHandler } from '../get-user-orders.handler'
+import { authToken } from '../../test/utils/auth-token'
+import { createNestApp } from '../../test/utils/create-nest-app'
+import { PrismaService } from '../database/prisma/prisma.service'
+import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
+import { GetUserOrdersHandler } from '../handlers/get-user-orders.handler'
 
 describe('GetUserOrdersHandler', () => {
   let handler: GetUserOrdersHandler

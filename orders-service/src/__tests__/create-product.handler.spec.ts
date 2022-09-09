@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
 import { BadRequestException } from '@nestjs/common'
 
-import { createNestApp } from '../../../test/utils/create-nest-app'
-import { ProductsRepository } from '../../database/repositories/products.repository'
-import { CreateProductHandler } from '../create-product.handler'
+import { createNestApp } from '../../test/utils/create-nest-app'
+import { ProductsRepository } from '../database/repositories/products.repository'
+import { CreateProductHandler } from '../handlers/create-product.handler'
 
 describe('CreateProductHandler', () => {
   let handler: CreateProductHandler

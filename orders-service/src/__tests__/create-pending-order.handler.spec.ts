@@ -5,10 +5,10 @@ import { BadRequestException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ORDER_STATUS } from '@rntlombatickets/common'
 
-import { authToken } from '../../../test/utils/auth-token'
-import { createNestApp } from '../../../test/utils/create-nest-app'
-import { PrismaService } from '../../database/prisma/prisma.service'
-import { CreatePendingOrderHandler } from '../create-pending-order.handler'
+import { authToken } from '../../test/utils/auth-token'
+import { createNestApp } from '../../test/utils/create-nest-app'
+import { PrismaService } from '../database/prisma/prisma.service'
+import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
 
 describe('CreatePendingOrderHandler', () => {
   let handler: CreatePendingOrderHandler

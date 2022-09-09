@@ -3,10 +3,10 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ORDER_STATUS, User } from '@rntlombatickets/common'
 
-import { authToken } from '../../../test/utils/auth-token'
-import { createNestApp } from '../../../test/utils/create-nest-app'
-import { PrismaService } from '../../database/prisma/prisma.service'
-import { GetOrderDetailsHandler } from '../get-order-details.handler'
+import { authToken } from '../../test/utils/auth-token'
+import { createNestApp } from '../../test/utils/create-nest-app'
+import { PrismaService } from '../database/prisma/prisma.service'
+import { GetOrderDetailsHandler } from '../handlers/get-order-details.handler'
 
 describe('GetOrderDetailsHandler', () => {
   let handler: GetOrderDetailsHandler
