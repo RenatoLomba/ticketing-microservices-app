@@ -15,7 +15,7 @@ interface ICreatePendingOrderHandlerDto {
 
 @Injectable()
 export class CreatePendingOrderHandler {
-  private readonly EXPIRATION_WINDOW_SECONDS = 15 * 60
+  readonly EXPIRATION_WINDOW_SECONDS = 15 * 60
 
   constructor(
     private readonly prisma: PrismaService,
