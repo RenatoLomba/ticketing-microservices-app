@@ -35,6 +35,18 @@ describe('CreatePendingOrderHandler', () => {
       userId = user.id
     })
 
+    it('throws an error when trying to order a product that does not exists', async () => {
+      const externalId = faker.datatype.uuid()
+
+      await expect(
+        handler.execute({ externalId, userId }),
+      ).rejects.toThrowError(
+        new BadRequestException(
+          'Trying to create order with a inexistent product',
+        ),
+      )
+    })
+
     it('throws an error when trying to order a product that is already reserved', async () => {
       const productId = faker.datatype.uuid()
       const externalId = faker.datatype.uuid()
@@ -60,16 +72,6 @@ describe('CreatePendingOrderHandler', () => {
         handler.execute({ externalId, userId }),
       ).rejects.toThrowError(
         new BadRequestException('Product is already reserved'),
-      )
-    })
-
-    it('throws an error when trying to order a product that does not exists', async () => {
-      const externalId = faker.datatype.uuid()
-
-      await expect(
-        handler.execute({ externalId, userId }),
-      ).rejects.toThrowError(
-        new BadRequestException('Requested product does not exists'),
       )
     })
 

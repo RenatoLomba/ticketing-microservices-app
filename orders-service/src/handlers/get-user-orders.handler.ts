@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
-import { PrismaService } from '../database/prisma/prisma.service'
+import { OrdersRepository } from '../database/repositories/orders.repository'
 
 interface IGetUserOrdersHandlerDto {
   userId: string
@@ -8,21 +8,10 @@ interface IGetUserOrdersHandlerDto {
 
 @Injectable()
 export class GetUserOrdersHandler {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly ordersRepository: OrdersRepository) {}
 
   async execute({ userId }: IGetUserOrdersHandlerDto) {
-    const orders = await this.prisma.order.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        id: true,
-        userId: true,
-        expiresAt: true,
-        createdAt: true,
-        status: true,
-      },
-    })
+    const orders = await this.ordersRepository.getOrdersByUserId(userId)
 
     return orders
   }

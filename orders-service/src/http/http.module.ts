@@ -5,9 +5,7 @@ import { JwtStrategy } from '@rntlombatickets/common'
 import { DatabaseModule } from '../database/database.module'
 import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
 import { GetOrderDetailsHandler } from '../handlers/get-order-details.handler'
-import { GetProductByExternal } from '../handlers/get-product-by-external.handler'
 import { GetUserOrdersHandler } from '../handlers/get-user-orders.handler'
-import { ValidateProductIsReservedHandler } from '../handlers/validate-product-is-reserved.handler'
 import { OrdersController } from './routes/orders.controller'
 
 @Module({
@@ -18,8 +16,6 @@ import { OrdersController } from './routes/orders.controller'
     CreatePendingOrderHandler,
     GetUserOrdersHandler,
     GetOrderDetailsHandler,
-    GetProductByExternal,
-    ValidateProductIsReservedHandler,
   ],
 })
 export class HttpModule {}

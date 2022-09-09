@@ -1,7 +1,6 @@
-import { ForbiddenException, Injectable } from '@nestjs/common'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { BadRequestException, Injectable } from '@nestjs/common'
 
-import { PrismaService } from '../database/prisma/prisma.service'
+import { ProductsRepository } from '../database/repositories/products.repository'
 
 interface ICreateProductHandlerDto {
   externalId: string
@@ -11,25 +10,21 @@ interface ICreateProductHandlerDto {
 
 @Injectable()
 export class CreateProductHandler {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly productsRepository: ProductsRepository) {}
 
   async execute({ externalId, price, title }: ICreateProductHandlerDto) {
-    await this.prisma.product
-      .create({
-        data: {
-          externalId,
-          price,
-          title,
-        },
-      })
-      .catch((error) => {
-        if (error instanceof PrismaClientKnownRequestError) {
-          if (error.code === 'P2002') {
-            throw new ForbiddenException('Duplicate externalId')
-          }
-        }
+    const productAlreadyExists = await this.productsRepository.getByExternalId(
+      externalId,
+    )
 
-        throw error
-      })
+    if (!!productAlreadyExists) {
+      throw new BadRequestException('Product with externalId already exists')
+    }
+
+    await this.productsRepository.create({
+      price,
+      title,
+      externalId,
+    })
   }
 }

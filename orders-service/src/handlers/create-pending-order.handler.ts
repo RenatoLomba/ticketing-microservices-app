@@ -1,12 +1,10 @@
 import { addSeconds } from 'date-fns'
 
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import { ORDER_STATUS } from '@rntlombatickets/common'
 
-import { PrismaService } from '../database/prisma/prisma.service'
-import { GetProductByExternal } from './get-product-by-external.handler'
-import { ValidateProductIsReservedHandler } from './validate-product-is-reserved.handler'
+import { OrdersRepository } from '../database/repositories/orders.repository'
+import { ProductsRepository } from '../database/repositories/products.repository'
 
 interface ICreatePendingOrderHandlerDto {
   externalId: string
@@ -18,19 +16,23 @@ export class CreatePendingOrderHandler {
   readonly EXPIRATION_WINDOW_SECONDS = 15 * 60
 
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly getProductByExternal: GetProductByExternal,
-    private readonly validateProductIsReserved: ValidateProductIsReservedHandler,
+    private readonly ordersRepository: OrdersRepository,
+    private readonly productsRepository: ProductsRepository,
   ) {}
 
   async execute({ externalId, userId }: ICreatePendingOrderHandlerDto) {
-    const product = await this.getProductByExternal.execute({ externalId })
+    const product = await this.productsRepository.getByExternalId(externalId)
+
+    if (!product) {
+      throw new BadRequestException(
+        'Trying to create order with a inexistent product',
+      )
+    }
 
     const productId = product.id
 
-    const productIsReserved = await this.validateProductIsReserved.execute({
-      productId,
-    })
+    const productIsReserved =
+      await this.ordersRepository.productIsReservedByOrder(productId)
 
     if (productIsReserved) {
       throw new BadRequestException('Product is already reserved')
@@ -38,23 +40,11 @@ export class CreatePendingOrderHandler {
 
     // Publish an event saying that an order was created
 
-    return this.prisma.order
-      .create({
-        data: {
-          productId,
-          userId,
-          status: ORDER_STATUS.CREATED,
-          expiresAt: addSeconds(new Date(), this.EXPIRATION_WINDOW_SECONDS),
-        },
-      })
-      .catch((error) => {
-        if (error instanceof PrismaClientKnownRequestError) {
-          if (error.code === 'P2003') {
-            throw new BadRequestException('Invalid productId')
-          }
-        }
-
-        throw error
-      })
+    return this.ordersRepository.create({
+      productId,
+      userId,
+      status: ORDER_STATUS.CREATED,
+      expiresAt: addSeconds(new Date(), this.EXPIRATION_WINDOW_SECONDS),
+    })
   }
 }

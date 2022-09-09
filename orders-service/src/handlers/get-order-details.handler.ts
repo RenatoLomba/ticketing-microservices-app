@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common'
 
-import { PrismaService } from '../database/prisma/prisma.service'
+import { OrdersRepository } from '../database/repositories/orders.repository'
 
 interface IGetOrderDetailsHandlerDto {
   orderId: string
@@ -13,21 +13,10 @@ interface IGetOrderDetailsHandlerDto {
 
 @Injectable()
 export class GetOrderDetailsHandler {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly ordersRepository: OrdersRepository) {}
 
   async execute({ orderId, userId }: IGetOrderDetailsHandlerDto) {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-      select: {
-        id: true,
-        userId: true,
-        expiresAt: true,
-        createdAt: true,
-        status: true,
-        product: true,
-        productId: true,
-      },
-    })
+    const order = await this.ordersRepository.getOrderById(orderId)
 
     if (!order) {
       throw new BadRequestException('Order request does not exists')
