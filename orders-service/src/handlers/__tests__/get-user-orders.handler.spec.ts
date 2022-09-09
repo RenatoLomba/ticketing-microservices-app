@@ -4,15 +4,13 @@ import { ConfigService } from '@nestjs/config'
 import { authToken } from '../../../test/utils/auth-token'
 import { createNestApp } from '../../../test/utils/create-nest-app'
 import { PrismaService } from '../../database/prisma/prisma.service'
-import { ProductsRepository } from '../../database/repositories/products.repository'
 import { CreatePendingOrderHandler } from '../create-pending-order.handler'
-import { CreateProductHandler } from '../create-product.handler'
 import { GetUserOrdersHandler } from '../get-user-orders.handler'
 
 describe('GetUserOrdersHandler', () => {
   let handler: GetUserOrdersHandler
   let config: ConfigService
-  let productsRepository: ProductsRepository
+
   let createOrder: CreatePendingOrderHandler
   let prisma: PrismaService
 
@@ -21,7 +19,7 @@ describe('GetUserOrdersHandler', () => {
 
     handler = app.get(GetUserOrdersHandler)
     config = app.get(ConfigService)
-    productsRepository = app.get(ProductsRepository)
+
     createOrder = app.get(CreatePendingOrderHandler)
     prisma = app.get(PrismaService)
 
