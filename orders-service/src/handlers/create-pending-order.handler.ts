@@ -1,4 +1,4 @@
-import { addMinutes } from 'date-fns'
+import { addSeconds } from 'date-fns'
 
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
@@ -15,6 +15,8 @@ interface ICreatePendingOrderHandlerDto {
 
 @Injectable()
 export class CreatePendingOrderHandler {
+  private readonly EXPIRATION_WINDOW_SECONDS = 15 * 60
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly getProductByExternal: GetProductByExternal,
@@ -42,7 +44,7 @@ export class CreatePendingOrderHandler {
           productId,
           userId,
           status: ORDER_STATUS.CREATED,
-          expiresAt: addMinutes(new Date(), 15),
+          expiresAt: addSeconds(new Date(), this.EXPIRATION_WINDOW_SECONDS),
         },
       })
       .catch((error) => {
