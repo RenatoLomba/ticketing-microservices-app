@@ -7,6 +7,7 @@ import { ORDER_STATUS } from '@rntlombatickets/common'
 
 import { authToken } from '../../test/utils/auth-token'
 import { createNestApp } from '../../test/utils/create-nest-app'
+import { CreateProductDatabaseStub } from '../../test/utils/stubs/create-product-database.stub'
 import { PrismaService } from '../database/prisma/prisma.service'
 import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
 
@@ -48,16 +49,11 @@ describe('CreatePendingOrderHandler', () => {
     })
 
     it('throws an error when trying to order a product that is already reserved', async () => {
-      const productId = faker.datatype.uuid()
-      const externalId = faker.datatype.uuid()
+      const productData = CreateProductDatabaseStub()
+      const { externalId, id: productId } = productData
 
       await prisma.product.create({
-        data: {
-          externalId,
-          id: productId,
-          price: 20.5,
-          title: 'Ticket 1',
-        },
+        data: productData,
       })
 
       await prisma.order.create({
@@ -76,16 +72,11 @@ describe('CreatePendingOrderHandler', () => {
     })
 
     it('returns a created order with status created and expiration date of 15 minutes', async () => {
-      const externalId = faker.datatype.uuid()
-      const productId = faker.datatype.uuid()
+      const productData = CreateProductDatabaseStub()
+      const { externalId, id: productId } = productData
 
       await prisma.product.create({
-        data: {
-          externalId,
-          id: productId,
-          price: 20.5,
-          title: 'Ticket 1',
-        },
+        data: productData,
       })
 
       const result = await handler.execute({ externalId, userId })

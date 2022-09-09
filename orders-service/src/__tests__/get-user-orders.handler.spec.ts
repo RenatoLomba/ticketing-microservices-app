@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config'
 
 import { authToken } from '../../test/utils/auth-token'
 import { createNestApp } from '../../test/utils/create-nest-app'
+import { CreateProductDatabaseStub } from '../../test/utils/stubs/create-product-database.stub'
 import { PrismaService } from '../database/prisma/prisma.service'
 import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
 import { GetUserOrdersHandler } from '../handlers/get-user-orders.handler'
@@ -41,16 +42,13 @@ describe('GetUserOrdersHandler', () => {
     })
 
     it('should return an empty array if user does not have any orders even if other users have', async () => {
-      const externalId = faker.datatype.uuid()
+      const productData = CreateProductDatabaseStub()
+      const { externalId } = productData
+
       const orderOwnerId = faker.datatype.uuid()
 
       await prisma.product.create({
-        data: {
-          id: faker.datatype.uuid(),
-          externalId,
-          price: 20.5,
-          title: 'Ticket 1',
-        },
+        data: productData,
       })
 
       await createOrder.execute({
@@ -65,32 +63,22 @@ describe('GetUserOrdersHandler', () => {
     })
 
     it('should return an array with the orders that a user created', async () => {
-      const externalId = faker.datatype.uuid()
-      const externalId2 = faker.datatype.uuid()
+      const product1 = CreateProductDatabaseStub()
+      const product2 = CreateProductDatabaseStub()
 
       await prisma.product.create({
-        data: {
-          id: faker.datatype.uuid(),
-          externalId,
-          price: 20.5,
-          title: 'Ticket 1',
-        },
+        data: product1,
       })
       await prisma.product.create({
-        data: {
-          id: faker.datatype.uuid(),
-          externalId: externalId2,
-          price: 20.5,
-          title: 'Ticket 2',
-        },
+        data: product2,
       })
 
       await createOrder.execute({
-        externalId,
+        externalId: product1.externalId,
         userId: currentUserId,
       })
       await createOrder.execute({
-        externalId: externalId2,
+        externalId: product2.externalId,
         userId: currentUserId,
       })
 
