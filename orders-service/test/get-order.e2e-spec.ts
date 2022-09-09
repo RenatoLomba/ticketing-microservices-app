@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config'
 import { ORDER_STATUS } from '@rntlombatickets/common'
 
 import { PrismaService } from '../src/database/prisma/prisma.service'
-import { CreatePendingOrderHandler } from '../src/handlers/create-pending-order.handler'
 import { authToken } from './utils/auth-token'
 import { createNestApp } from './utils/create-nest-app'
 import { CreateProductDatabaseStub } from './utils/stubs/create-product-database.stub'
@@ -15,14 +14,12 @@ describe('Get Order (e2e)', () => {
   let app: INestApplication
   let config: ConfigService
   let prisma: PrismaService
-  let createOrder: CreatePendingOrderHandler
 
   beforeEach(async () => {
     app = await createNestApp()
 
     config = app.get(ConfigService)
     prisma = app.get(PrismaService)
-    createOrder = app.get(CreatePendingOrderHandler)
 
     await app.init()
   })
