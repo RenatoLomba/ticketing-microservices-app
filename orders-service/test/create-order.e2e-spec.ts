@@ -131,5 +131,9 @@ describe('Create Order (e2e)', () => {
         differenceInSeconds(new Date(response.body.expiresAt), new Date()),
       ).toEqual(createOrder.EXPIRATION_WINDOW_SECONDS - 1)
     })
+
+    it.todo(
+      'should publish the ticket created event with data about the ticket',
+    )
   })
 })
