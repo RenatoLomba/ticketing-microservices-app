@@ -41,7 +41,6 @@ export class OrdersRepository {
         createdAt: true,
         status: true,
         product: true,
-        productId: true,
       },
     })
   }
@@ -57,6 +56,14 @@ export class OrdersRepository {
         expiresAt: true,
         createdAt: true,
         status: true,
+        product: {
+          select: {
+            id: true,
+            title: true,
+            externalId: true,
+            price: true,
+          },
+        },
       },
     })
   }

@@ -112,7 +112,7 @@ describe('Get Order (e2e)', () => {
       expect(response.statusCode).toEqual(200)
       expect(response.body.id).toEqual(orderId)
       expect(response.body.status).toEqual(ORDER_STATUS.CREATED)
-      expect(response.body.productId).toEqual(product.id)
+      expect(response.body.product.id).toEqual(product.id)
       expect(response.body.product.title).toEqual(product.title)
       expect(response.body.product.version).toEqual(1)
     })
