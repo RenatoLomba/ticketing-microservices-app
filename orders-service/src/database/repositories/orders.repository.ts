@@ -11,6 +11,11 @@ interface ICreateOrderDto {
   expiresAt: Date
 }
 
+interface IUpdateOrderDto {
+  status?: ORDER_STATUS
+  expiresAt?: Date
+}
+
 @Injectable()
 export class OrdersRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -89,5 +94,19 @@ export class OrdersRepository {
 
         throw error
       })
+  }
+
+  async update(id: string, data: IUpdateOrderDto) {
+    return await this.prisma.order.update({
+      data,
+      where: { id },
+      select: {
+        id: true,
+        userId: true,
+        expiresAt: true,
+        createdAt: true,
+        status: true,
+      },
+    })
   }
 }

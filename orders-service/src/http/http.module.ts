@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 import { JwtStrategy } from '@rntlombatickets/common'
 
 import { DatabaseModule } from '../database/database.module'
+import { CancelOrderHandler } from '../handlers/cancel-order.handler'
 import { CreatePendingOrderHandler } from '../handlers/create-pending-order.handler'
 import { GetOrderDetailsHandler } from '../handlers/get-order-details.handler'
 import { GetUserOrdersHandler } from '../handlers/get-user-orders.handler'
@@ -16,6 +17,7 @@ import { OrdersController } from './routes/orders.controller'
     CreatePendingOrderHandler,
     GetUserOrdersHandler,
     GetOrderDetailsHandler,
+    CancelOrderHandler,
   ],
 })
 export class HttpModule {}
