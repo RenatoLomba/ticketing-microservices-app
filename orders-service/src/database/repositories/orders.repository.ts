@@ -40,7 +40,14 @@ export class OrdersRepository {
         expiresAt: true,
         createdAt: true,
         status: true,
-        product: true,
+        product: {
+          select: {
+            id: true,
+            title: true,
+            externalId: true,
+            price: true,
+          },
+        },
       },
     })
   }

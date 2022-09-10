@@ -114,7 +114,6 @@ describe('Get Order (e2e)', () => {
       expect(response.body.status).toEqual(ORDER_STATUS.CREATED)
       expect(response.body.product.id).toEqual(product.id)
       expect(response.body.product.title).toEqual(product.title)
-      expect(response.body.product.version).toEqual(1)
     })
   })
 })
