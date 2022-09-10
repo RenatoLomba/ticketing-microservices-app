@@ -30,5 +30,7 @@ export class CancelOrderHandler {
     await this.ordersRepository.update(orderId, {
       status: ORDER_STATUS.CANCELLED,
     })
+
+    // Publish an event order:updated
   }
 }
