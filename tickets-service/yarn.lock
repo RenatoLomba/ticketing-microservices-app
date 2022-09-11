@@ -926,10 +926,10 @@
     tmp "0.2.1"
     ts-pattern "^4.0.1"
 
-"@rntlombatickets/common@1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@rntlombatickets/common/-/common-1.0.9.tgz#0357f2bea285109b5f021a94d42b060427c5fe44"
-  integrity sha512-/+MtVWyXaisoarK5wxwTDArC5oBkamkI/uNbZlOqz8tyi2+tmHMSMYkJL2bB32/IGGRx9xd+sOzfzN228kwFwQ==
+"@rntlombatickets/common@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@rntlombatickets/common/-/common-1.0.10.tgz#7bb0f137a05ce94a229add92fe069b32c929a930"
+  integrity sha512-3ZQi7z7+8/5ad1DeLkD98q6z4zndRjXY5N7mWeH5mc6yLUGU990bcirgCb7fDkURqQazkOapIAbBmbF1BKwL0Q==
   dependencies:
     "@nestjs/common" "^9.0.8"
     "@nestjs/config" "^2.2.0"
