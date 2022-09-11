@@ -132,8 +132,6 @@ describe('Create Order (e2e)', () => {
       ).toEqual(createOrder.EXPIRATION_WINDOW_SECONDS - 1)
     })
 
-    it.todo(
-      'should publish the ticket created event with data about the ticket',
-    )
+    it.todo('should publish the order created event')
   })
 })

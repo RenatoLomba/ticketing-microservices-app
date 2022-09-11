@@ -1,3 +1,3 @@
 it.todo(
-  'should receive an event about a ticket that has been created and proccess it',
+  'should receive an event about a ticket that has been created and process it',
 )
