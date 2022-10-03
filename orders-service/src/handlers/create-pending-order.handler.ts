@@ -3,8 +3,7 @@ import { addSeconds } from 'date-fns'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ORDER_STATUS } from '@rntlombatickets/common'
 
-import { OrdersRepository } from '../database/repositories/orders.repository'
-import { ProductsRepository } from '../database/repositories/products.repository'
+import { OrdersRepository, ProductsRepository } from '../database/repositories'
 
 interface ICreatePendingOrderHandlerDto {
   externalId: string
@@ -37,8 +36,6 @@ export class CreatePendingOrderHandler {
     if (productIsReserved) {
       throw new BadRequestException('Product is already reserved')
     }
-
-    // Publish an event saying that an order was created
 
     return this.ordersRepository.create({
       productId,

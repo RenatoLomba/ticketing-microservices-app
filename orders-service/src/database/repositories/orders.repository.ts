@@ -84,6 +84,9 @@ export class OrdersRepository {
     return await this.prisma.order
       .create({
         data,
+        include: {
+          product: true,
+        },
       })
       .catch((error) => {
         if (error instanceof PrismaClientKnownRequestError) {

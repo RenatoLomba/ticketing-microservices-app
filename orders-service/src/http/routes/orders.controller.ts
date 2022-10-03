@@ -10,11 +10,14 @@ import {
 } from '@nestjs/common'
 import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
-import { CancelOrderHandler } from '../../handlers/cancel-order.handler'
-import { CreatePendingOrderHandler } from '../../handlers/create-pending-order.handler'
-import { GetOrderDetailsHandler } from '../../handlers/get-order-details.handler'
-import { GetUserOrdersHandler } from '../../handlers/get-user-orders.handler'
-import { CreateOrderDto } from '../dtos/create-order.dto'
+import { OrderCreatedPublisher } from '../../events/publishers'
+import {
+  CancelOrderHandler,
+  CreatePendingOrderHandler,
+  GetOrderDetailsHandler,
+  GetUserOrdersHandler,
+} from '../../handlers'
+import { CreateOrderDto } from '../dtos'
 
 @Controller('/api/orders')
 export class OrdersController {
@@ -23,6 +26,7 @@ export class OrdersController {
     private readonly getUserOrders: GetUserOrdersHandler,
     private readonly getOrderDetails: GetOrderDetailsHandler,
     private readonly cancelOrderHandler: CancelOrderHandler,
+    private readonly orderCreatedPublisher: OrderCreatedPublisher,
   ) {}
 
   @Get('/healthcheck')
@@ -47,11 +51,28 @@ export class OrdersController {
 
   @Post('/create')
   @UseGuards(JwtAuthGuard)
-  createOrder(
+  async createOrder(
     @Body() { externalId }: CreateOrderDto,
     @CurrentUser() user: User,
   ) {
-    return this.createPendingOrder.execute({ externalId, userId: user.id })
+    const order = await this.createPendingOrder.execute({
+      externalId,
+      userId: user.id,
+    })
+
+    this.orderCreatedPublisher.publish({
+      expiresAt: order.expiresAt.toUTCString(),
+      id: order.id,
+      product: {
+        id: order.product.id,
+        externalId: order.product.externalId,
+        price: order.product.price,
+      },
+      status: order.status,
+      userId: order.userId,
+    })
+
+    return order
   }
 
   @Patch('/:id/cancel')

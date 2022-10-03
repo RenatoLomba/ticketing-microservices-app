@@ -4,8 +4,9 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 
 import { DatabaseModule } from '../database/database.module'
-import { CreateProductHandler } from '../handlers/create-product.handler'
-import { TicketCreatedListener } from './listeners/ticket-created.listener'
+import { CreateProductHandler } from '../handlers'
+import { TicketCreatedListener } from './listeners'
+import { OrderCancelledPublisher, OrderCreatedPublisher } from './publishers'
 
 @Module({
   imports: [ConfigModule, DatabaseModule],
@@ -38,7 +39,13 @@ import { TicketCreatedListener } from './listeners/ticket-created.listener'
     },
     TicketCreatedListener,
     CreateProductHandler,
+    OrderCreatedPublisher,
+    OrderCancelledPublisher,
   ],
-  exports: [TicketCreatedListener],
+  exports: [
+    TicketCreatedListener,
+    OrderCreatedPublisher,
+    OrderCancelledPublisher,
+  ],
 })
 export class EventsModule {}
