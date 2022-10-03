@@ -103,12 +103,8 @@ export class OrdersRepository {
     return await this.prisma.order.update({
       data,
       where: { id },
-      select: {
-        id: true,
-        userId: true,
-        expiresAt: true,
-        createdAt: true,
-        status: true,
+      include: {
+        product: true,
       },
     })
   }

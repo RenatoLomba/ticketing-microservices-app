@@ -27,10 +27,8 @@ export class CancelOrderHandler {
       throw new ForbiddenException('User cannot cancel this order')
     }
 
-    await this.ordersRepository.update(orderId, {
+    return this.ordersRepository.update(orderId, {
       status: ORDER_STATUS.CANCELLED,
     })
-
-    // Publish an event order:updated
   }
 }

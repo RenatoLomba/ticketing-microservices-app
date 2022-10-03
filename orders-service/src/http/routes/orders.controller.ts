@@ -10,7 +10,10 @@ import {
 } from '@nestjs/common'
 import { CurrentUser, JwtAuthGuard, User } from '@rntlombatickets/common'
 
-import { OrderCreatedPublisher } from '../../events/publishers'
+import {
+  OrderCancelledPublisher,
+  OrderCreatedPublisher,
+} from '../../events/publishers'
 import {
   CancelOrderHandler,
   CreatePendingOrderHandler,
@@ -27,6 +30,7 @@ export class OrdersController {
     private readonly getOrderDetails: GetOrderDetailsHandler,
     private readonly cancelOrderHandler: CancelOrderHandler,
     private readonly orderCreatedPublisher: OrderCreatedPublisher,
+    private readonly orderCancelledPublisher: OrderCancelledPublisher,
   ) {}
 
   @Get('/healthcheck')
@@ -61,7 +65,7 @@ export class OrdersController {
     })
 
     this.orderCreatedPublisher.publish({
-      expiresAt: order.expiresAt.toUTCString(),
+      expiresAt: order.expiresAt.toISOString(),
       id: order.id,
       product: {
         id: order.product.id,
@@ -78,7 +82,18 @@ export class OrdersController {
   @Patch('/:id/cancel')
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
-  cancelOrder(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.cancelOrderHandler.execute({ orderId: id, userId: user.id })
+  async cancelOrder(@Param('id') id: string, @CurrentUser() user: User) {
+    const order = await this.cancelOrderHandler.execute({
+      orderId: id,
+      userId: user.id,
+    })
+
+    this.orderCancelledPublisher.publish({
+      id: order.id,
+      product: {
+        externalId: order.product.externalId,
+        id: order.product.id,
+      },
+    })
   }
 }
