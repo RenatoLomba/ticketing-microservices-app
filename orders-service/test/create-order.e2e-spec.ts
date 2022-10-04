@@ -1,4 +1,5 @@
 import { differenceInSeconds } from 'date-fns'
+import { Stan } from 'node-nats-streaming'
 import * as request from 'supertest'
 
 import { faker } from '@faker-js/faker'
@@ -8,15 +9,15 @@ import { ORDER_STATUS, User } from '@rntlombatickets/common'
 
 import { PrismaService } from '../src/database/prisma/prisma.service'
 import { CreatePendingOrderHandler } from '../src/handlers/create-pending-order.handler'
-import { authToken } from './utils/auth-token'
-import { createNestApp } from './utils/create-nest-app'
-import { CreateProductDatabaseStub } from './utils/stubs/create-product-database.stub'
+import { authToken, createNestApp } from './utils'
+import { CreateProductDatabaseStub } from './utils/stubs'
 
 describe('Create Order (e2e)', () => {
   let app: INestApplication
   let config: ConfigService
   let prisma: PrismaService
   let createOrder: CreatePendingOrderHandler
+  let natsClient: Stan
 
   beforeEach(async () => {
     app = await createNestApp()
@@ -24,6 +25,7 @@ describe('Create Order (e2e)', () => {
     config = app.get(ConfigService)
     prisma = app.get(PrismaService)
     createOrder = app.get(CreatePendingOrderHandler)
+    natsClient = app.get('NATS_STREAMING_CONNECTION')
 
     await app.init()
   })
@@ -132,6 +134,23 @@ describe('Create Order (e2e)', () => {
       ).toEqual(createOrder.EXPIRATION_WINDOW_SECONDS - 1)
     })
 
-    it.todo('should publish the order created event')
+    it('should publish the order created event', async () => {
+      const productData = CreateProductDatabaseStub()
+
+      const externalId = productData.externalId
+
+      await prisma.product.create({
+        data: productData,
+      })
+
+      await request(app.getHttpServer())
+        .post('/api/orders/create')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          externalId,
+        })
+
+      expect(natsClient.publish).toHaveBeenCalled()
+    })
   })
 })

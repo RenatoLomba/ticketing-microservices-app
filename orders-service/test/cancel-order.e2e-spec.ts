@@ -1,3 +1,4 @@
+import { Stan } from 'node-nats-streaming'
 import * as request from 'supertest'
 
 import { faker } from '@faker-js/faker'
@@ -17,6 +18,7 @@ describe('Cancel Order (e2e)', () => {
   let config: ConfigService
   let prisma: PrismaService
   let ordersRepository: OrdersRepository
+  let natsClient: Stan
 
   beforeEach(async () => {
     app = await createNestApp()
@@ -24,6 +26,7 @@ describe('Cancel Order (e2e)', () => {
     config = app.get(ConfigService)
     prisma = app.get(PrismaService)
     ordersRepository = app.get(OrdersRepository)
+    natsClient = app.get('NATS_STREAMING_CONNECTION')
 
     await app.init()
   })
@@ -113,6 +116,23 @@ describe('Cancel Order (e2e)', () => {
       expect(orderUpdated.status).toEqual(ORDER_STATUS.CANCELLED)
     })
 
-    it.todo('should publish the order updated')
+    it('should publish the order cancelled', async () => {
+      const product = await prisma.product.create({
+        data: CreateProductDatabaseStub(),
+      })
+
+      const { id: orderId } = await prisma.order.create({
+        data: CreateOrderDatabaseStub({
+          productId: product.id,
+          userId: currentUserId,
+        }),
+      })
+
+      await request(app.getHttpServer())
+        .patch(`/api/orders/${orderId}/cancel`)
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expect(natsClient.publish).toHaveBeenCalled()
+    })
   })
 })
