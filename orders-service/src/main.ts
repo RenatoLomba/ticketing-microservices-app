@@ -4,7 +4,10 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 
 import { AppModule } from './app.module'
-import { TicketCreatedListener } from './events/listeners/ticket-created.listener'
+import {
+  TicketCreatedListener,
+  TicketUpdatedListener,
+} from './events/listeners'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -27,8 +30,12 @@ async function bootstrap() {
   const ticketCreatedListener = app.get<TicketCreatedListener>(
     TicketCreatedListener,
   )
+  const ticketUpdatedListener = app.get<TicketUpdatedListener>(
+    TicketUpdatedListener,
+  )
 
   ticketCreatedListener.listen()
+  ticketUpdatedListener.listen()
 
   await app.listen(5002, () => {
     console.log('[App]', `Running on port 5002`)

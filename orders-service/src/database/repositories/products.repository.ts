@@ -9,6 +9,11 @@ interface ICreateProductDto {
   price: number
 }
 
+interface IUpdateProductDto {
+  title: string
+  price: number
+}
+
 @Injectable()
 export class ProductsRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -47,6 +52,20 @@ export class ProductsRepository {
         externalId: true,
         createdAt: true,
       },
+    })
+  }
+
+  async update(id: string, data: IUpdateProductDto) {
+    return await this.prisma.product.update({
+      data,
+      select: {
+        id: true,
+        price: true,
+        title: true,
+        externalId: true,
+        version: true,
+      },
+      where: { id },
     })
   }
 }
