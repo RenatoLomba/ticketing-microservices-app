@@ -1,16 +1,20 @@
 import { Message, Stan } from 'node-nats-streaming'
 
 import { Inject, Injectable } from '@nestjs/common'
-import { Listener, Subjects, TicketCreatedEvent } from '@rntlombatickets/common'
+import {
+  Listener,
+  QUEUE_GROUPS,
+  Subjects,
+  TicketCreatedEvent,
+} from '@rntlombatickets/common'
 
 import { CreateProductHandler } from '../../handlers'
-import { QueueGroups } from './queue-groups'
 
 @Injectable()
 export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
   readonly subject = Subjects.TicketCreated
 
-  queueGroupName = QueueGroups.ORDERS_SERVICE
+  queueGroupName = QUEUE_GROUPS.ORDERS_SERVICE
 
   constructor(
     @Inject(CreateProductHandler)

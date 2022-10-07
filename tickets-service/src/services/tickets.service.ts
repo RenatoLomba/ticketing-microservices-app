@@ -114,7 +114,14 @@ export class TicketsService {
 
     return this.prisma.ticket
       .update({
-        data: updateData,
+        data: {
+          price: updateData.price,
+          title: updateData.title,
+          slug: updateData.slug,
+          version: {
+            increment: 1,
+          },
+        },
         where: {
           id,
         },

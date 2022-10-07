@@ -16,5 +16,6 @@ model Ticket {
   slug      String   @unique
   price     Float
   userId    String
+  version   Int      @default(1)
   createdAt DateTime @default(now())
 }

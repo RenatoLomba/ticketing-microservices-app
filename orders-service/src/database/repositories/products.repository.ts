@@ -57,7 +57,12 @@ export class ProductsRepository {
 
   async update(id: string, data: IUpdateProductDto) {
     return await this.prisma.product.update({
-      data,
+      data: {
+        ...data,
+        version: {
+          increment: 1,
+        },
+      },
       select: {
         id: true,
         price: true,
